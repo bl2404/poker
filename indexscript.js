@@ -1,0 +1,1 @@
+document.getElementById("wallet").innerHTML=54;
