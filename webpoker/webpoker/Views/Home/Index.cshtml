@@ -1,0 +1,54 @@
+﻿@model UserAction
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col" style="text-align: center;">Info for player</div>
+        </div>
+
+        <div class="row">
+            <div class="col text-center">Player1</div>
+            <div class="col" style="text-align: center;">Player2</div>
+            <div class="col" style="text-align: center;">Player3</div>
+        </div>
+
+        <div class="row">
+            <div class="col" style="text-align: center;">Player1's action</div>
+            <div class="col" style="text-align: center;">Player2's action</div>
+            <div class="col" style="text-align: center;">Player3's action</div>
+        </div>
+
+        <div class="row">
+            <div class="col" style="text-align: center; font-size: 1cm;">$25</div>
+        </div>
+
+        <div class="row">
+            <div class="col border" style="border-width: 2px; text-align: center; font-size: 20mm;">K♠</div>
+            <div class="col border" style="text-align: center; color: red; font-size: 20mm;">Q♥</div>
+            <div class="col border" style="text-align: center; color: red; font-size: 20mm;">A♦</div>
+            <div class="col border" style="text-align: center; font-size: 20mm;">J♣</div>
+            <div class="col border" style="text-align: center; font-size: 20mm;">3♣</div>
+        </div>
+
+        <div class="row">
+            <div class="col border" style="font-size: 20mm;">10♠</div>
+            <div class="col border" style="text-align: left; color: red; font-size: 20mm;">7♥</div>
+        </div>
+
+        <div class="row offset-5 " action="@Url.Action("InsertStudent","Home")" method="post">
+            <div class="col" style="text-align: center;">
+                <button class="bg-primary">Pass</button>
+            </div>
+            <div class="col">
+                <input id="Value" name="Value" type="number" min="0" placeholder="przebij" />
+            </div>
+            <div class="col">
+                <input class="btn-primary" type="submit" value="Go" />
+            </div>
+            <div class="col" style="text-align: right;">$ </div>
+            <div class="col" id="wallet" style="text-align: left;">30</div>
+        </div>
+        <script src="~/js/indexscript.js"></script>
+    </div>

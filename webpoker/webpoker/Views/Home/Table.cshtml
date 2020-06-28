@@ -1,0 +1,35 @@
+﻿@model IEnumerable<webpoker.Models.TableModel>
+
+@{
+    ViewData["Title"] = "Table";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Choose Table</h1>
+
+<p>
+    <a asp-action="Create" class="disabled">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    <tbody>
+        @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.ActionLink(item.Name, "JoinTable", "Home");
+
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
