@@ -1,4 +1,4 @@
-﻿@model UserAction
+﻿@model Table
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -33,22 +33,23 @@
         </div>
 
         <div class="row">
-            <div class="col border" style="font-size: 20mm;">10♠</div>
+            <div class="col border" style="text-align: right; font-size: 20mm;">10♠</div>
             <div class="col border" style="text-align: left; color: red; font-size: 20mm;">7♥</div>
         </div>
 
-        <div class="row offset-5 " action="@Url.Action("InsertStudent","Home")" method="post">
-            <div class="col" style="text-align: center;">
-                <button class="bg-primary">Pass</button>
-            </div>
-            <div class="col">
-                <input id="Value" name="Value" type="number" min="0" placeholder="przebij" />
-            </div>
-            <div class="col">
-                <input class="btn-primary" type="submit" value="Go" />
-            </div>
-            <div class="col" style="text-align: right;">$ </div>
-            <div class="col" id="wallet" style="text-align: left;">30</div>
+
+        <div class="row offset-3">
+
+            <div class="col" id="name"></div>
+            <div class="col btn-danger" value="Pass" style="text-align: center;">Pass</div>
+            <input class="col" id="Value" name="Value" type="number" min="0" placeholder="przebij" />
+            <div class="col btn-success text-center" id="Go" type="submit">Go</div>
+            <div class="col" id="wallet"></div>
+
         </div>
-        <script src="~/js/indexscript.js"></script>
+
+
+
+
     </div>
+    <script src="~/js/indexscript.js"></script>

@@ -6,16 +6,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using webpoker.Models;
+using System.Web;
 
 namespace webpoker.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private Table game;
+        private User loggedUser;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            //game = new Game();
         }
 
         public IActionResult Index()
@@ -30,31 +34,30 @@ namespace webpoker.Controllers
 
         public IActionResult SubmitName(User user)
         {
+            if(user.Name=="abc")
+            {
+                Table table = new Table();
+                table.Admin = user;
+                table.Name = "stol1";
+
+                User user1 = new User();
+                user1.Name = "janusz";
+                user1.Wallet = 777;
+
+                table.Users.Add(user);
+                table.Users.Add(user1);
+
+
+                Game.Game game = new Game.Game();
+                game.Table = table;
+            }
             return RedirectToAction("Table");
         }
 
-        public IActionResult Table(TableModel table)
+        public IActionResult Table()
         {
-            User user1 = new User();
-            user1.Name = "abc";
-            user1.Wallet = 100;
-
-            User user2 = new User();
-            user1.Name = "xyz";
-            user1.Wallet = 150;
-
-
-            //TableModel table = new TableModel();
-            table.Users = new List<User>();
-            table.Users.Add(user1);
-            table.Users.Add(user2);
-
-            table.Name = "stolik1";
-            var tables = new List<TableModel>();
-            var table2 = new TableModel();
-            table2.Name = "stolik2";
-            tables.Add(table);
-            tables.Add(table2);
+            List<Table> tables = new List<Table>();
+            tables.Add(Game.Game.Instance.Table);
             return View(tables);
         }
 
@@ -68,7 +71,7 @@ namespace webpoker.Controllers
             return View();
         }
 
-        public IActionResult InsertStudent(UserAction a)
+        public IActionResult GoButton(UserAction a)
         {
             return RedirectToAction("Index");
         }
