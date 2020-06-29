@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using webpoker.Hubs;
+using Microsoft.AspNetCore.Session;
+using Microsoft.AspNetCore.Http;
 
 
 namespace webpoker
@@ -27,6 +29,10 @@ namespace webpoker
         {
             services.AddControllersWithViews();
             services.AddSignalR();
+            services.AddSession();
+            services.AddDistributedMemoryCache();
+            services.AddMvc();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +54,8 @@ namespace webpoker
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

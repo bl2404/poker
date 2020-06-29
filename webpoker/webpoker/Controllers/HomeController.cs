@@ -7,24 +7,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using webpoker.Models;
 using System.Web;
+using Microsoft.AspNetCore.Http;
+
 
 namespace webpoker.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private Table game;
-        private User loggedUser;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            //game = new Game();
         }
 
         public IActionResult Index()
         {
-            return View();
+            return View(Game.Game.Instance);
         }
 
         public IActionResult CreateUser()
@@ -34,7 +33,10 @@ namespace webpoker.Controllers
 
         public IActionResult SubmitName(User user)
         {
-            if(user.Name=="abc")
+            Game.Application.Instance.AllUsers.Add(user);
+            HttpContext.Session.SetString("username", user.Name);
+            user.Wallet = new Random().Next(50,100);
+            if (user.Name=="abc")
             {
                 Table table = new Table();
                 table.Admin = user;
@@ -63,6 +65,8 @@ namespace webpoker.Controllers
 
         public ActionResult JoinTable()
         {
+            Game.Game.Instance.Table.Users.Add(Game.Application.Instance.AllUsers.First
+                (x => x.Name == HttpContext.Session.GetString("username")));
             return RedirectToAction("Index");
         }
 

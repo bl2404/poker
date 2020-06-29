@@ -1,4 +1,6 @@
-﻿@model Table
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model webpoker.Game.Game
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -9,8 +11,7 @@
         </div>
 
         <div class="row">
-            <div class="col text-center">Player1</div>
-            <div class="col" style="text-align: center;">Player2</div>
+            <div class="col text-center">@Model.Table.Users.Where(x => x.Name != HttpContextAccessor.HttpContext.Session.GetString("username")).Last().Name</div>
             <div class="col" style="text-align: center;">Player3</div>
         </div>
 
@@ -25,31 +26,39 @@
         </div>
 
         <div class="row">
+            <div class="col"></div>
             <div class="col border" style="border-width: 2px; text-align: center; font-size: 20mm;">K♠</div>
             <div class="col border" style="text-align: center; color: red; font-size: 20mm;">Q♥</div>
             <div class="col border" style="text-align: center; color: red; font-size: 20mm;">A♦</div>
             <div class="col border" style="text-align: center; font-size: 20mm;">J♣</div>
             <div class="col border" style="text-align: center; font-size: 20mm;">3♣</div>
+            <div class="col"></div>
         </div>
+        <div class="row"><p> </p></div>
 
         <div class="row">
+            <div class="col"></div>
+            <div class="col"></div>
             <div class="col border" style="text-align: right; font-size: 20mm;">10♠</div>
+            <div class="col"></div>
             <div class="col border" style="text-align: left; color: red; font-size: 20mm;">7♥</div>
+            <div class="col"></div>
+            <div class="col"></div>
         </div>
+        <div class="row"><p> </p></div>
 
 
-        <div class="row offset-3">
+        <div class="row">
 
-            <div class="col" id="name"></div>
+            <div class="col" id="name">@HttpContextAccessor.HttpContext.Session.GetString("username")</div>
             <div class="col btn-danger" value="Pass" style="text-align: center;">Pass</div>
             <input class="col" id="Value" name="Value" type="number" min="0" placeholder="przebij" />
             <div class="col btn-success text-center" id="Go" type="submit">Go</div>
-            <div class="col" id="wallet"></div>
-
+            <div class="col">@String.Concat("$", Model.Table.Users.First(x => x.Name == HttpContextAccessor.HttpContext.Session.GetString("username")).Wallet)</div>
         </div>
 
 
 
 
     </div>
-    <script src="~/js/indexscript.js"></script>
+<script src="~/js/indexscript.js"></script>

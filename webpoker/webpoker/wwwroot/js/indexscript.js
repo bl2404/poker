@@ -1,10 +1,4 @@
-var str1 = "$";
-var str2 = "54";
-document.getElementById("wallet").innerHTML = str1.concat(str2);
-document.getElementById("wallet").innerHTML = str1.concat(str2);
 
-
-"use strict";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 

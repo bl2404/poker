@@ -10,6 +10,7 @@ namespace webpoker.Game
         public Game()
         {
             Instance = this;
+            Application.Instance.Games.Add(this);
         }
         public Models.Table Table { get; set; }
 
