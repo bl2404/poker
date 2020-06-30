@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using webpoker.Models;
 
-namespace webpoker.Game
+namespace webpoker
 {
     public class Application
     {

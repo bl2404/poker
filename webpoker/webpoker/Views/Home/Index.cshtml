@@ -1,64 +1,63 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-@model webpoker.Game.Game
+@model webpoker.Models.Game
 @{
     ViewData["Title"] = "Home Page";
 }
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col" style="text-align: center;">Info for player</div>
-        </div>
-
-        <div class="row">
-            <div class="col text-center">@Model.Table.Users.Where(x => x.Name != HttpContextAccessor.HttpContext.Session.GetString("username")).Last().Name</div>
-            <div class="col" style="text-align: center;">Player3</div>
-        </div>
-
-        <div class="row">
-            <div class="col" style="text-align: center;">Player1's action</div>
-            <div class="col" style="text-align: center;">Player2's action</div>
-            <div class="col" style="text-align: center;">Player3's action</div>
-        </div>
-
-        <div class="row">
-            <div class="col" style="text-align: center; font-size: 1cm;">$25</div>
-        </div>
-
-        <div class="row">
-            <div class="col"></div>
-            <div class="col border" style="border-width: 2px; text-align: center; font-size: 20mm;">K♠</div>
-            <div class="col border" style="text-align: center; color: red; font-size: 20mm;">Q♥</div>
-            <div class="col border" style="text-align: center; color: red; font-size: 20mm;">A♦</div>
-            <div class="col border" style="text-align: center; font-size: 20mm;">J♣</div>
-            <div class="col border" style="text-align: center; font-size: 20mm;">3♣</div>
-            <div class="col"></div>
-        </div>
-        <div class="row"><p> </p></div>
-
-        <div class="row">
-            <div class="col"></div>
-            <div class="col"></div>
-            <div class="col border" style="text-align: right; font-size: 20mm;">10♠</div>
-            <div class="col"></div>
-            <div class="col border" style="text-align: left; color: red; font-size: 20mm;">7♥</div>
-            <div class="col"></div>
-            <div class="col"></div>
-        </div>
-        <div class="row"><p> </p></div>
-
-
-        <div class="row">
-
-            <div class="col" id="name">@HttpContextAccessor.HttpContext.Session.GetString("username")</div>
-            <div class="col btn-danger" value="Pass" style="text-align: center;">Pass</div>
-            <input class="col" id="Value" name="Value" type="number" min="0" placeholder="przebij" />
-            <div class="col btn-success text-center" id="Go" type="submit">Go</div>
-            <div class="col">@String.Concat("$", Model.Table.Users.First(x => x.Name == HttpContextAccessor.HttpContext.Session.GetString("username")).Wallet)</div>
-        </div>
-
-
-
-
+<div class="container-fluid">
+    <div class="row">
+        <div class="col" style="text-align: center;">Info for player</div>
     </div>
-<script src="~/js/indexscript.js"></script>
+
+    <div class="row">
+        <div class="col text-center">@Model.Users.Where(x => x.Name != HttpContextAccessor.HttpContext.Session.GetString("username")).Last().Name</div>
+        <div class="col" style="text-align: center;"></div>
+        <div class="col" style="text-align: center;"></div>
+    </div>
+
+    <div class="row">
+        <div class="col text-center" id="useraction1"></div>
+        <div class="col" style="text-align: center;"></div>
+        <div class="col" style="text-align: center;"></div>
+    </div>
+
+    <div class="row">
+        <div class="col" style="text-align: center;">$25</div>
+    </div>
+
+    <div class="row">
+        <div class="col"></div>
+        <div class="col border" style="border-width: 2px; text-align: center; font-size: 20mm;">K♠</div>
+        <div class="col border" style="text-align: center; color: red; font-size: 20mm;">Q♥</div>
+        <div class="col border" style="text-align: center; color: red; font-size: 20mm;">A♦</div>
+        <div class="col border" style="text-align: center; font-size: 20mm;">J♣</div>
+        <div class="col border" style="text-align: center; font-size: 20mm;">3♣</div>
+        <div class="col"></div>
+    </div>
+    <div class="row"><p> </p></div>
+
+    <div class="row">
+        <div class="col"></div>
+        <div class="col"></div>
+        <div class="col border" style="text-align: center; font-size: 20mm;">10♠</div>
+        <div class="col"></div>
+        <div class="col border" style="text-align: center; color: red; font-size: 20mm;">7♥</div>
+        <div class="col"></div>
+        <div class="col"></div>
+    </div>
+    <div class="row"><p> </p></div>
+
+
+    <div class="row">
+
+        <div class="col" id="namefield">@HttpContextAccessor.HttpContext.Session.GetString("username")</div>
+        <div class="col btn-danger" id="passbutton" value="Pass" style="text-align: center;">Pass</div>
+        <input class="col" id="valueinput" name="Value" type="number" min="0" placeholder="przebij" />
+        <div class="col btn-success text-center" id="gobutton" type="submit">Go</div>
+        <div class="col">@String.Concat("$", Model.Users.First(x => x.Name == HttpContextAccessor.HttpContext.Session.GetString("username")).Wallet)</div>
+    </div>
+
+
+</div>
+

@@ -5,16 +5,17 @@ using System.Threading.Tasks;
 
 namespace webpoker.Models
 {
-    public class Table
+    public class Game
     {
-        public Table()
+        public Game()
         {
             Users = new List<User>();
+            Application.Instance.Games.Add(this);
+
         }
         public List<User> Users { get; set; }
         public CardSuit CardSuit { get; set; }
         public string Name { get; set; }
         public User Admin { get; set; }
-
     }
 }

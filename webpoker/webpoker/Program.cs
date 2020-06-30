@@ -13,7 +13,7 @@ namespace webpoker
     {
         public static void Main(string[] args)
         {
-            new Game.Application();
+            new Application();
             CreateHostBuilder(args).Build().Run();
         }
 
