@@ -1,7 +1,11 @@
 ﻿"use strict";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-connection.start();
+
+connection.start().then(function () {
+    var username = document.getElementById("namefield").innerHTML;
+    connection.invoke("SendName",username);
+});
 
 connection.on("ReceiveMessage", function (user, message) {
     var indexes = document.getElementById("actions").children.length;
@@ -17,8 +21,48 @@ connection.on("ReceiveMessage", function (user, message) {
     }
 });
 
+connection.on("ReceiveName", function (newUserName, userList) {
+    var row = document.getElementById("users");
+    var clientName = document.getElementById("namefield").innerHTML;
+    var i;
+
+    if (row.children.length == 0) {
+        for (i = 0; i < userList.length; i++) {
+            if (userList[i] != clientName) {
+                createUser(userList[i]);
+            }
+        }
+    }
+    else {
+        var alreadyExist = false;
+
+        for (i = 0; i < row.children.length; i++) {
+            if (row.children[i].innerHTML == newUserName) {
+                alreadyExist = true;
+                break;
+            }
+        }
+        if (alreadyExist == false && newUserName != clientName) {
+            createUser(newUserName);
+        }
+    }
+});
+
+function createUser(name) {
+    var row = document.getElementById("users");
+    var actionRow = document.getElementById("actions");
+    var div = document.createElement("div");
+    div.className = "col";
+    div.innerHTML = name;
+    row.appendChild(div);
+
+    var divAction = document.createElement("div");
+    divAction.className = "col";
+    actionRow.appendChild(divAction);
+};
+
 document.getElementById("gobutton").addEventListener("click", function (event) {
-    var message = document.getElementById("valueinput").value;
+    var message = document.getElementById("valueinput").value.toString();
     var username = document.getElementById("namefield").innerHTML;
     connection.invoke("SendMessage", username, message);
     event.preventDefault();

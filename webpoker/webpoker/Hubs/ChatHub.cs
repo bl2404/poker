@@ -13,5 +13,11 @@ namespace webpoker.Hubs
         {
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
+
+        public async Task SendName(string username)
+        {
+            var users = Application.Instance.AllUsers.Select(x => x.Name).ToArray();
+            await Clients.All.SendAsync("ReceiveName", username, users);
+        }
     }
 }

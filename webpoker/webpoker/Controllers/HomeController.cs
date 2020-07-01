@@ -33,21 +33,21 @@ namespace webpoker.Controllers
 
         public IActionResult SubmitName(User user)
         {
-            Application.Instance.AllUsers.Add(user);
+            if (!Application.Instance.AllUsers.Any(x => x.Name == user.Name))
+            {
+                Application.Instance.AllUsers.Add(user);
+            }
+
             HttpContext.Session.SetString("username", user.Name);
             user.Wallet = new Random().Next(50,100);
+
             if (user.Name=="abc")
             {
                 Game game = new Game();
                 game.Admin = user;
                 game.Name = "stol1";
 
-                User user1 = new User();
-                user1.Name = "janusz";
-                user1.Wallet = 777;
-
                 game.Users.Add(user);
-                game.Users.Add(user1);
             }
             return RedirectToAction("Table");
         }
@@ -59,19 +59,20 @@ namespace webpoker.Controllers
 
         public ActionResult JoinTable()
         {
-            Application.Instance.Games[0].Users.Add(Application.Instance.AllUsers.First//zrobic [0]
-                (x => x.Name == HttpContext.Session.GetString("username")));
+            var userlist = Application.Instance.Games[0].Users;
+            var clientName = HttpContext.Session.GetString("username");
+            if (!userlist.Any(x => x.Name == clientName))
+            {
+                Application.Instance.Games[0].Users.Add(Application.Instance.AllUsers.First
+                    (x => x.Name == HttpContext.Session.GetString("username")));
+            }
+
             return RedirectToAction("Index");
         }
 
         public ActionResult Privacy()
         {
             return View();
-        }
-
-        public IActionResult GoButton()
-        {
-            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
