@@ -10,13 +10,13 @@
         <div class="col" style="text-align: center;">Info for player</div>
     </div>
 
-    <div class="row">
+    <div class="row" id="users">
         <div class="col text-center">@Model.Users.Where(x => x.Name != HttpContextAccessor.HttpContext.Session.GetString("username")).Last().Name</div>
         <div class="col" style="text-align: center;"></div>
         <div class="col" style="text-align: center;"></div>
     </div>
 
-    <div class="row">
+    <div class="row" id="actions">
         <div class="col text-center" id="useraction1"></div>
         <div class="col" style="text-align: center;"></div>
         <div class="col" style="text-align: center;"></div>
@@ -61,3 +61,5 @@
 
 </div>
 
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
