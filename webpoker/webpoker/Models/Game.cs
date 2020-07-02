@@ -17,5 +17,6 @@ namespace webpoker.Models
         public CardSuit CardSuit { get; set; }
         public string Name { get; set; }
         public User Admin { get; set; }
+        public User CurrentUser { get; set; }
     }
 }

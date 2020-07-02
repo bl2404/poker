@@ -19,5 +19,29 @@ namespace webpoker.Hubs
             var users = Application.Instance.AllUsers.Select(x => x.Name).ToArray();
             await Clients.All.SendAsync("ReceiveName", username, users);
         }
+
+
+        public async Task SendStartSignal()
+        {
+            var game = Application.Instance.Games[0];
+            if (game.CurrentUser == null )
+            {
+                var random = new Random();
+                int index=random.Next(0, game.Users.Count-1);
+                game.CurrentUser = game.Users[index];
+
+            }
+            else if(game.CurrentUser == game.Users.Last())
+            {
+                game.CurrentUser = game.Users.First();
+            }
+            else
+            {
+                game.CurrentUser = Application.Instance.Games[0].Users[Application.Instance.Games[0].Users.IndexOf(game.CurrentUser)+1];
+            }
+
+
+            await Clients.All.SendAsync("ReceiveStartSignal", game.CurrentUser.Name);
+        }
     }
 }

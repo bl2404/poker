@@ -40,9 +40,9 @@
 
         <div class="row">
             <div class="col" id="namefield">@HttpContextAccessor.HttpContext.Session.GetString("username")</div>
-            <div class="col btn-danger" id="passbutton" value="Pass" style="text-align: center;">Pass</div>
+            <div class="col btn-danger text-center" id="passbutton">Pass</div>
             <input class="col" id="valueinput" name="Value" type="number" min="0" placeholder="przebij" />
-            <div class="col btn-success text-center" id="gobutton" type="submit">Go</div>
+            <div class="col btn-success text-center" id="gobutton">Go</div>
             <div class="col">@String.Concat("$", Model.Users.First(x => x.Name == HttpContextAccessor.HttpContext.Session.GetString("username")).Wallet)</div>
         </div>
 

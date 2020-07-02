@@ -59,12 +59,30 @@ connection.on("ReceiveName", function (newUserName, userList) {
     }
 });
 
-document.getElementById("gobutton").addEventListener("click", function (event) {
+connection.on("ReceiveStartSignal", function (currentUser) {
+    var clientName = document.getElementById("namefield").innerHTML;
+    if (clientName == currentUser) {
+        enableUserPanel();
+    }
+    else {
+        disbleUserPanel();
+    }
+});
+
+document.getElementById("gobutton").onclick = function (event) {
+    if ($("#gobutton").hasClass("disabled")) {
+        return;
+    }
     var message = document.getElementById("valueinput").value.toString();
     var username = document.getElementById("namefield").innerHTML;
     connection.invoke("SendMessage", username, message);
+    if (document.getElementById("info").innerHTML == "Wait for users and start the game") {
+        document.getElementById("info").innerHTML = "";
+        document.getElementById("gobutton").innerHTML = "Go";
+    }
+    connection.invoke("SendStartSignal");
     event.preventDefault();
-});
+};
 
 function createUser(name) {
     var row = document.getElementById("users");
@@ -84,6 +102,17 @@ function disbleUserPanel() {
     $("#passbutton").addClass("disabled");
     $("#valueinput").prop("disabled", true);
     $("#gobutton").addClass("disabled");
+    document.getElementById("info").innerHTML = "Wait for your turn";
+
+};
+
+function enableUserPanel() {
+
+    $("#passbutton").removeClass("disabled");
+    $("#valueinput").prop("disabled", false);
+    $("#gobutton").removeClass("disabled");
+    document.getElementById("info").innerHTML = "Your move";
+
 };
 
 function preparePanelForAdmin() {
