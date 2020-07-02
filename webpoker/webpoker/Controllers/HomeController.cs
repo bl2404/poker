@@ -37,18 +37,14 @@ namespace webpoker.Controllers
             {
                 Application.Instance.AllUsers.Add(user);
             }
+            if (user.Name == "abc")
+            {
+                Application.Instance.Games[0].Admin = user;
+            }
 
             HttpContext.Session.SetString("username", user.Name);
             user.Wallet = new Random().Next(50,100);
 
-            if (user.Name=="abc")
-            {
-                Game game = new Game();
-                game.Admin = user;
-                game.Name = "stol1";
-
-                game.Users.Add(user);
-            }
             return RedirectToAction("Table");
         }
 

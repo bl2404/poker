@@ -1,5 +1,16 @@
 ﻿"use strict";
 
+var adminName = document.getElementById("adminname").innerHTML;
+var clientName = document.getElementById("namefield").innerHTML;
+
+if (adminName != clientName) {
+    disbleUserPanel();
+}
+else {
+    preparePanelForAdmin();
+}
+
+
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
 connection.start().then(function () {
@@ -48,6 +59,13 @@ connection.on("ReceiveName", function (newUserName, userList) {
     }
 });
 
+document.getElementById("gobutton").addEventListener("click", function (event) {
+    var message = document.getElementById("valueinput").value.toString();
+    var username = document.getElementById("namefield").innerHTML;
+    connection.invoke("SendMessage", username, message);
+    event.preventDefault();
+});
+
 function createUser(name) {
     var row = document.getElementById("users");
     var actionRow = document.getElementById("actions");
@@ -61,9 +79,16 @@ function createUser(name) {
     actionRow.appendChild(divAction);
 };
 
-document.getElementById("gobutton").addEventListener("click", function (event) {
-    var message = document.getElementById("valueinput").value.toString();
-    var username = document.getElementById("namefield").innerHTML;
-    connection.invoke("SendMessage", username, message);
-    event.preventDefault();
-});
+function disbleUserPanel() {
+
+    $("#passbutton").addClass("disabled");
+    $("#valueinput").prop("disabled", true);
+    $("#gobutton").addClass("disabled");
+};
+
+function preparePanelForAdmin() {
+    $("#passbutton").addClass("disabled");
+    $("#valueinput").prop("disabled", true);
+    document.getElementById("gobutton").innerHTML = "Start";
+    document.getElementById("info").innerHTML = "Wait for users and start the game";
+}

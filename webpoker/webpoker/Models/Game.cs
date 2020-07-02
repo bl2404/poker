@@ -10,7 +10,7 @@ namespace webpoker.Models
         public Game()
         {
             Users = new List<User>();
-            Application.Instance.Games.Add(this);
+            //Application.Instance.Games.Add(this);
 
         }
         public List<User> Users { get; set; }
