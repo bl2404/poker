@@ -112,7 +112,8 @@ function enableUserPanel() {
     $("#valueinput").prop("disabled", false);
     $("#gobutton").removeClass("disabled");
     document.getElementById("info").innerHTML = "Your move";
-
+    document.getElementById("gobutton").innerHTML = "Wait";
+    document.getElementById("valueinput").value = 0;
 };
 
 function preparePanelForAdmin() {
@@ -121,3 +122,13 @@ function preparePanelForAdmin() {
     document.getElementById("gobutton").innerHTML = "Start";
     document.getElementById("info").innerHTML = "Wait for users and start the game";
 }
+
+$("#valueinput").change(function () {
+
+    if ($("#valueinput").val() == 0) {
+        document.getElementById("gobutton").innerHTML = "Wait";
+    }
+    else {
+        document.getElementById("gobutton").innerHTML = "Przebij";
+    }
+});
