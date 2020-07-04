@@ -23,7 +23,7 @@ namespace webpoker.Controllers
 
         public IActionResult Index()
         {
-            return View(Application.Instance.Games[0]);
+            return View(Application.Instance.Tables[0]);
         }
 
         public IActionResult CreateUser()
@@ -39,7 +39,7 @@ namespace webpoker.Controllers
             }
             if (user.Name == "abc")
             {
-                Application.Instance.Games[0].Admin = user;
+                Application.Instance.Tables[0].Admin = user;
             }
 
             HttpContext.Session.SetString("username", user.Name);
@@ -50,16 +50,16 @@ namespace webpoker.Controllers
 
         public IActionResult Table()
         {
-            return View(Application.Instance.Games);
+            return View(Application.Instance.Tables);
         }
 
         public ActionResult JoinTable()
         {
-            var userlist = Application.Instance.Games[0].Users;
+            var userlist = Application.Instance.Tables[0].Users;
             var clientName = HttpContext.Session.GetString("username");
             if (!userlist.Any(x => x.Name == clientName))
             {
-                Application.Instance.Games[0].Users.Add(Application.Instance.AllUsers.First
+                Application.Instance.Tables[0].Users.Add(Application.Instance.AllUsers.First
                     (x => x.Name == HttpContext.Session.GetString("username")));
             }
 

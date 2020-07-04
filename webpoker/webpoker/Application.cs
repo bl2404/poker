@@ -10,18 +10,18 @@ namespace webpoker
     {
         public Application()
         {
-            Games = new List<Game>();
+            Tables = new List<Table>();
             AllUsers = new List<Models.User>();
 
             //temporary
-            Game game = new Game();
+            Table game = new Table();
             game.Name = "game1";
-            Games.Add(game);
+            Tables.Add(game);
             //
 
             Instance = this;
         }
-        public List<Game> Games { get; set; }
+        public List<Table> Tables { get; set; }
         public List<Models.User> AllUsers { get; set; }
         public static Application Instance { get; set; }
     }

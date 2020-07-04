@@ -1,7 +1,7 @@
 ﻿"use strict";
 
-var adminName = document.getElementById("adminname").innerHTML;
-var clientName = document.getElementById("namefield").innerHTML;
+var adminName = $("#adminname").html();
+var clientName = $("#namefield").html();
 
 if (adminName != clientName) {
     disbleUserPanel();
@@ -10,31 +10,39 @@ else {
     preparePanelForAdmin();
 }
 
-
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
 connection.start().then(function () {
-    var username = document.getElementById("namefield").innerHTML;
+    var username = $("#namefield").html();
     connection.invoke("SendName",username);
 });
 
-connection.on("ReceiveMessage", function (user, message) {
+connection.on("ReceiveMessage", function (sender, message, currentUser, minval, maxval) {
+
     var indexes = document.getElementById("actions").children.length;
     var i;
     var index = -1;
     for (i = 0; i < indexes; i++) {
-        if (document.getElementById("users").children[i].innerHTML == user) {
+        if (document.getElementById("users").children[i].innerHTML == sender) {
             index = i;
         }
     }
     if (index > -1) {
         document.getElementById("actions").children[index].innerHTML = message;
     }
+
+    var clientName = $("#namefield").html();
+    if (clientName == currentUser) {
+        enableUserPanel(minval,maxval);
+    }
+    else {
+        disbleUserPanel();
+    }
 });
 
 connection.on("ReceiveName", function (newUserName, userList) {
     var row = document.getElementById("users");
-    var clientName = document.getElementById("namefield").innerHTML;
+    var clientName = $("#namefield").html();
     var i;
 
     if (row.children.length == 0) {
@@ -59,30 +67,22 @@ connection.on("ReceiveName", function (newUserName, userList) {
     }
 });
 
-connection.on("ReceiveStartSignal", function (currentUser) {
-    var clientName = document.getElementById("namefield").innerHTML;
-    if (clientName == currentUser) {
-        enableUserPanel();
-    }
-    else {
-        disbleUserPanel();
-    }
-});
-
-document.getElementById("gobutton").onclick = function (event) {
+$("#gobutton").click(function () {
     if ($("#gobutton").hasClass("disabled")) {
         return;
     }
-    var message = document.getElementById("valueinput").value.toString();
-    var username = document.getElementById("namefield").innerHTML;
-    connection.invoke("SendMessage", username, message);
-    if (document.getElementById("info").innerHTML == "Wait for users and start the game") {
-        document.getElementById("info").innerHTML = "";
-        document.getElementById("gobutton").innerHTML = "Go";
+    var message = $("#valueinput").val();
+    var username = $("#namefield").html();
+    var money = $("#wallet").html();
+    var pool = $("#pool").html();
+    if (message != "") {
+        money = money - message;
+        pool = pool + message;
     }
-    connection.invoke("SendStartSignal");
-    event.preventDefault();
-};
+    $("#pool").html(pool);
+    $("#wallet").html(money);
+    connection.invoke("SendMessage", username, message);
+});
 
 function createUser(name) {
     var row = document.getElementById("users");
@@ -102,33 +102,47 @@ function disbleUserPanel() {
     $("#passbutton").addClass("disabled");
     $("#valueinput").prop("disabled", true);
     $("#gobutton").addClass("disabled");
-    document.getElementById("info").innerHTML = "Wait for your turn";
+    $("#info").html("Wait for your turn");
+    $("#gobutton").html("Czekam");
+    $("#info").removeClass("text-success");
+    $("#info").addClass("text-secondary");
+    $("#valueinput").val("");
+
 
 };
 
-function enableUserPanel() {
+function enableUserPanel(minval, maxval, askPrevious) {
 
     $("#passbutton").removeClass("disabled");
     $("#valueinput").prop("disabled", false);
     $("#gobutton").removeClass("disabled");
-    document.getElementById("info").innerHTML = "Your move";
-    document.getElementById("gobutton").innerHTML = "Wait";
-    document.getElementById("valueinput").value = 0;
+    $("#info").html("Your move");
+    $("#gobutton").html("Wait");
+    $("#valueinput").val(minval);
+    $("#info").removeClass("text-secondary");
+    $("#info").addClass("text-success");
+    $("#valueinput").prop("min", minval);
+    $("#valueinput").prop("max", maxval);
+    if ($("#valueinput").attr("min") > 0) {
+        $("#gobutton").html("Wchodzę");
+    }
 };
 
 function preparePanelForAdmin() {
     $("#passbutton").addClass("disabled");
     $("#valueinput").prop("disabled", true);
-    document.getElementById("gobutton").innerHTML = "Start";
-    document.getElementById("info").innerHTML = "Wait for users and start the game";
+    $("#gobutton").html("Start");
+    $("#info").html("Wait for users and start the game");
 }
 
 $("#valueinput").change(function () {
-
-    if ($("#valueinput").val() == 0) {
-        document.getElementById("gobutton").innerHTML = "Wait";
+    if ($("#valueinput").val() == 0 || $("#valueinput").val() == null ) {
+        $("#gobutton").html("Czekam");
     }
     else {
-        document.getElementById("gobutton").innerHTML = "Przebij";
+        if ($("#valueinput").attr("min")>0) {
+            $("#gobutton").html("Wchodzę");
+        }
+        $("#gobutton").html("Przebijam");
     }
 });
