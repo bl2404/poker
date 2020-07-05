@@ -17,11 +17,14 @@ namespace webpoker.Hubs
             {
                 table.Game = new Game();
             }
-            table.Game.NextStep(message);
+            else
+            {
+                table.Game.NextStep(message);
+            }
 
             User nextUser = table.Game.CurrentUser;
 
-            await Clients.All.SendAsync("ReceiveMessage", sender, message, nextUser.Name,table.Game.MinBid,table.Game.MaxBid);
+            await Clients.All.SendAsync("ReceiveMessage", sender, table.Game.MessageToSend, nextUser.Name,table.Game.MinBid,table.Game.MaxBid, table.Game.Pool);
         }
 
         public async Task SendName(string username)

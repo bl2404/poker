@@ -14,10 +14,10 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
 connection.start().then(function () {
     var username = $("#namefield").html();
-    connection.invoke("SendName",username);
+    connection.invoke("SendName", username);
 });
 
-connection.on("ReceiveMessage", function (sender, message, currentUser, minval, maxval) {
+connection.on("ReceiveMessage", function (sender, message, currentUser, minval, maxval,poolval) {
 
     var indexes = document.getElementById("actions").children.length;
     var i;
@@ -31,9 +31,10 @@ connection.on("ReceiveMessage", function (sender, message, currentUser, minval, 
         document.getElementById("actions").children[index].innerHTML = message;
     }
 
+    $("#pool").html(poolval);
     var clientName = $("#namefield").html();
     if (clientName == currentUser) {
-        enableUserPanel(minval,maxval);
+        enableUserPanel(minval, maxval);
     }
     else {
         disbleUserPanel();
@@ -74,12 +75,9 @@ $("#gobutton").click(function () {
     var message = $("#valueinput").val();
     var username = $("#namefield").html();
     var money = $("#wallet").html();
-    var poolval = parseInt($("#pool").html());
     if (message != "") {
         money = money - message;
-        poolval = poolval + parseInt(message);
     }
-    $("#pool").html(poolval);
     $("#wallet").html(money);
     connection.invoke("SendMessage", username, message);
 });
@@ -144,11 +142,11 @@ function preparePanelForAdmin() {
 }
 
 $("#valueinput").change(function () {
-    if ($("#valueinput").val() == 0 || $("#valueinput").val() == null ) {
+    if ($("#valueinput").val() == 0 || $("#valueinput").val() == null) {
         $("#gobutton").html("Czekam");
     }
     else {
-        if ($("#valueinput").attr("min")>0) {
+        if ($("#valueinput").attr("min") > 0) {
             $("#gobutton").html("Wchodzę");
         }
         $("#gobutton").html("Przebijam");
