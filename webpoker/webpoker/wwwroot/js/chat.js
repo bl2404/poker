@@ -17,7 +17,17 @@ connection.start().then(function () {
     connection.invoke("SendName", username);
 });
 
-connection.on("ReceiveMessage", function (sender, message, currentUser, minval, maxval,poolval) {
+connection.on("ReceiveMessage", function (sender, message) {
+
+    decodeGameInfo(message);
+    var usr=getclientuser();
+    $("#hand1").html(usr.firstcard);
+    $("#hand2").html(usr.sencondcard);
+    $("#flop1").html(game.flop1);
+    $("#flop2").html(game.flop2);
+    $("#flop3").html(game.flop3);
+    $("#turn").html(game.turn);
+    $("#river").html(game.river);
 
     var indexes = document.getElementById("actions").children.length;
     var i;
@@ -31,10 +41,10 @@ connection.on("ReceiveMessage", function (sender, message, currentUser, minval, 
         document.getElementById("actions").children[index].innerHTML = message;
     }
 
-    $("#pool").html(poolval);
+    $("#pool").html(game.pool);
     var clientName = $("#namefield").html();
-    if (clientName == currentUser) {
-        enableUserPanel(minval, maxval);
+    if (clientName == game.currentuser) {
+        enableUserPanel(game.minbid, game.maxbid);
     }
     else {
         disbleUserPanel();
@@ -152,3 +162,56 @@ $("#valueinput").change(function () {
         $("#gobutton").html("Przebijam");
     }
 });
+
+var userlist=[];
+var game;
+function decodeGameInfo(fullinfo) {
+    userlist = [];
+    var usersInfo = fullinfo.split(":")[0].split(";");
+    var gameInfo = fullinfo.split(":")[1];
+    var i;
+    for (i = 0; i < usersInfo.length; i++) {
+        var newuser = new User(usersInfo[i]);
+        userlist.push(newuser);
+    }
+    game = new Game(gameInfo);
+};
+
+function getclientuser() {
+    var username = $("#namefield").html();
+    var i;
+    for (i = 0; i < userlist.length; i++) {
+        if (userlist[i].name == username) {
+            return userlist[i];
+        }
+    }
+};
+
+class User {
+    constructor(userInfo) {
+
+        var splittedInfo = userInfo.split("^");
+        this.name = splittedInfo[0];
+        this.wallet = splittedInfo[1];
+        this.action = splittedInfo[2];
+        this.active = splittedInfo[3];
+        this.firstcard = splittedInfo[4];
+        this.sencondcard = splittedInfo[5];
+    }
+}
+
+class Game {
+    constructor(gameInfo) {
+        var splittedInfo = gameInfo.split("^");
+        this.currentuser = splittedInfo[0];
+        this.minbid = splittedInfo[1];
+        this.maxbid = splittedInfo[2];
+        this.pool = splittedInfo[3];
+        this.recivedmessage = splittedInfo[4];
+        this.flop1 = splittedInfo[5];
+        this.flop2 = splittedInfo[6];
+        this.flop3 = splittedInfo[7];
+        this.turn = splittedInfo[8];
+        this.river = splittedInfo[9];
+    }
+}

@@ -26,9 +26,13 @@ namespace webpoker.Enums
         Nine,
         [Display(Name = "10")]
         Ten,
+        [Display(Name = "J")]
         J,
+        [Display(Name = "Q")]
         Q,
+        [Display(Name = "K")]
         K,
+        [Display(Name = "A")]
         A
     }
 }

@@ -8,18 +8,25 @@ namespace webpoker.Models
 {
     public class CardSuit
     {
+        private List<Card> _suit;
         public CardSuit()
         {
-            Suit = new List<Card>();
+            _suit = new List<Card>();
             foreach(Figures figure in Enum.GetValues(typeof(Figures)))
             {
                 foreach(Numbers number in Enum.GetValues(typeof(Numbers)))
                 {
-                    Suit.Add(new Card(figure, number));
+                    _suit.Add(new Card(figure, number));
                 }
             }
         }
 
-        public List<Card> Suit { get; private set; }
+        public Card TakeCard()
+        {
+            var index = new Random().Next(0, _suit.Count - 1);
+            Card card= _suit[index];
+            _suit.Remove(card);
+            return card;
+        }
     }
 }

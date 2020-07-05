@@ -17,5 +17,13 @@ namespace webpoker.Models
         public Figures Figure { get; private set; }
         public Numbers Number { get; private set; }
 
+        public string GetCardDescription()
+        {
+            string numberName = EnumExtensions.GetDisplayName(Number);
+            string figureName = EnumExtensions.GetDisplayName(Figure);
+            return numberName + figureName;
+        }
+
+
     }
 }
