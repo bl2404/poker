@@ -43,7 +43,7 @@ namespace webpoker.Controllers
             }
 
             HttpContext.Session.SetString("username", user.Name);
-            user.Wallet = new Random().Next(50,100);
+            user.Wallet = 100;
 
             return RedirectToAction("Table");
         }

@@ -12,6 +12,8 @@ namespace webpoker.Models
         public int Wallet { get; set; }
         public int? Action { get; private set; }
 
+        public bool Active { get; private set; } = true;
+
         public void RemoveFromWallet(int value)
         {
             Wallet = Wallet - value;
@@ -37,6 +39,13 @@ namespace webpoker.Models
         public void ResetAction()
         {
             Action = null;
+            Active = true;
+        }
+
+        public void Pass()
+        {
+            Action = -1;
+            Active = false;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace webpoker.Models
     {
         public User CurrentUser { get; private set; }
 
-        public int MinBid { get; private set; }
+        public int MinBid { get; private set; } = 0;
         public int MaxBid { get; private set; } = 0;
         public bool Active { get; private set; }
 
@@ -28,12 +28,9 @@ namespace webpoker.Models
             _activeUsers = Application.Instance.Tables[0].Users;
         }
 
-
-
-
         public void NextStep(string message)
         {
-            MinBid = 0;
+            _activeUsers = Application.Instance.Tables[0].Users.Where(x=>x.Active).ToList();
             MaxBid = _activeUsers.Min(x => x.Wallet);
             if (CurrentUser == null)
             {
@@ -41,13 +38,23 @@ namespace webpoker.Models
             }
             else
             {
-                var value = Convert.ToInt32(message);
-                if (value > MinBid)
+                if (message == "pass")
                 {
-                    _actionmax = value;
-                    MinBid = value;
+                    CurrentUser.Pass();
+                    _activeUsers = Application.Instance.Tables[0].Users.Where(x => x.Active).ToList();
                 }
-                CurrentUser.CalculateTotalAction(value);
+                else
+                {
+                    var value = Convert.ToInt32(message);
+                    if (value > MinBid)
+                    {
+                        _actionmax = value;
+                        MinBid = value;
+                    }
+                    CurrentUser.RemoveFromWallet(value);
+                    CurrentUser.CalculateTotalAction(value);
+                    _pool += value;
+                }
                 CurrentUser = _activeUsers.FirstOrDefault(x => x.Action == null);
                 if (CurrentUser == null)
                 {
@@ -55,7 +62,6 @@ namespace webpoker.Models
                     if (CurrentUser == null)
                     {
                         FinishAuction();
-                        Debug.WriteLine("");
                     }
                     else
                     {
@@ -64,63 +70,7 @@ namespace webpoker.Models
                     }
                 }
             }
-
-            //else
-            //{
-            //    int value = Convert.ToInt32(message);
-            //    CurrentUser.CalculateTotalAction(value);
-            //    CurrentUser.RemoveFromWallet(value);
-            //    _pool += value;
-
-            //    if (!_askPreviousUser)
-            //    {
-            //        PrimaryLoop(value);
-            //    }
-            //    else
-            //    {
-            //        SecondaryLoop();
-            //    }
-            //}
         }
-
-        private void PrimaryLoop(int value)
-        {
-            if (value > MinBid)
-            {
-                MinBid = value;
-                _actionmax = value;
-            }
-            if (CurrentUser == _activeUsers.Last())
-            {
-                if (_activeUsers.Any(x => x.Action < _actionmax))
-                {
-                    //SecondaryLoop();
-                }
-                else
-                {
-                    FinishAuction();
-                }
-            }
-            else
-            {
-                CurrentUser = _activeUsers[_activeUsers.IndexOf(CurrentUser) + 1];
-            }
-        }
-
-        //private void SecondaryLoop()
-        //{
-        //    CurrentUser = _activeUsers.FirstOrDefault(x => x.Action < _actionmax);
-        //    if (CurrentUser == null)
-        //    {
-        //        FinishAuction();
-        //    }
-        //    else
-        //    {
-        //        MinBid = _actionmax - CurrentUser.Action;
-        //        MaxBid = MinBid;
-        //        _askPreviousUser = true;
-        //    }
-        //}
 
         private void StartGame()
         {
@@ -146,6 +96,12 @@ namespace webpoker.Models
             MaxBid = _activeUsers.Min(x => x.Wallet);
             _askPreviousUser = false;
             CurrentUser = _activeUsers.First();
+
+            foreach(var user in Application.Instance.Tables[0].Users)
+            {
+                Debug.WriteLine("user: " + user.Name + " " + user.Wallet);
+            }
+            Debug.WriteLine("poola: " + _pool);
         }
 
 

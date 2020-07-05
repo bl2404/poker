@@ -74,14 +74,22 @@ $("#gobutton").click(function () {
     var message = $("#valueinput").val();
     var username = $("#namefield").html();
     var money = $("#wallet").html();
-    var pool = $("#pool").html();
+    var poolval = parseInt($("#pool").html());
     if (message != "") {
         money = money - message;
-        pool = pool + message;
+        poolval = poolval + parseInt(message);
     }
-    $("#pool").html(pool);
+    $("#pool").html(poolval);
     $("#wallet").html(money);
     connection.invoke("SendMessage", username, message);
+});
+
+$("#passbutton").click(function () {
+    if ($("#passbutton").hasClass("disabled")) {
+        return;
+    }
+    var username = $("#namefield").html();
+    connection.invoke("SendMessage", username, "pass");
 });
 
 function createUser(name) {
