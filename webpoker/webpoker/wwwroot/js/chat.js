@@ -18,17 +18,8 @@ connection.start().then(function () {
 });
 
 connection.on("ReceiveMessage", function (sender, message) {
-
     decodeGameInfo(message);
-    var usr=getclientuser();
-    $("#hand1").html(usr.firstcard);
-    $("#hand2").html(usr.sencondcard);
-    $("#flop1").html(game.flop1);
-    $("#flop2").html(game.flop2);
-    $("#flop3").html(game.flop3);
-    $("#turn").html(game.turn);
-    $("#river").html(game.river);
-
+    showCards();
     var indexes = document.getElementById("actions").children.length;
     var i;
     var index = -1;
@@ -123,8 +114,6 @@ function disbleUserPanel() {
     $("#info").removeClass("text-success");
     $("#info").addClass("text-secondary");
     $("#valueinput").val("");
-
-
 };
 
 function enableUserPanel(minval, maxval, askPrevious) {
@@ -149,7 +138,36 @@ function preparePanelForAdmin() {
     $("#valueinput").prop("disabled", true);
     $("#gobutton").html("Start");
     $("#info").html("Wait for users and start the game");
+};
+
+function showCards() {
+    var usr = getclientuser();
+    $("#hand1").html(usr.firstcard);
+    $("#hand2").html(usr.sencondcard);
+    $("#flop1").html(game.flop1);
+    $("#flop2").html(game.flop2);
+    $("#flop3").html(game.flop3);
+    $("#turn").html(game.turn);
+    $("#river").html(game.river);
+    colorCards(document.getElementById("handcards"));
+    colorCards(document.getElementById("tablecards"));
+
 }
+
+function colorCards(element) {
+    var i;
+    for (i = 0; i < element.children.length; i++) {
+        var text = element.children[i].innerHTML;
+        if (text.includes("♦") || text.includes("♥")) {
+            element.children[i].style.color = "red";
+        }
+        else {
+            element.children[i].style.color = "black";
+        }
+    }
+}
+
+
 
 $("#valueinput").change(function () {
     if ($("#valueinput").val() == 0 || $("#valueinput").val() == null) {
