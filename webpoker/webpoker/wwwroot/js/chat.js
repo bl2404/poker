@@ -18,28 +18,23 @@ connection.start().then(function () {
 });
 
 connection.on("ReceiveMessage", function (sender, message) {
-    decodeGameInfo(message);
-    showCards();
-    var indexes = document.getElementById("actions").children.length;
-    var i;
-    var index = -1;
-    for (i = 0; i < indexes; i++) {
-        if (document.getElementById("users").children[i].innerHTML == sender) {
-            index = i;
+    decodeMessage(message);
+    clearUserPanels();
+    createUserPanel();
+
+    if (game != null) {
+        showCards();
+
+        $("#pool").html(game.pool);
+        var clientName = $("#namefield").html();
+        if (clientName == game.currentuser) {
+            enableUserPanel(game.minbid, game.maxbid);
+        }
+        else {
+            disbleUserPanel();
         }
     }
-    if (index > -1) {
-        document.getElementById("actions").children[index].innerHTML = message;
-    }
 
-    $("#pool").html(game.pool);
-    var clientName = $("#namefield").html();
-    if (clientName == game.currentuser) {
-        enableUserPanel(game.minbid, game.maxbid);
-    }
-    else {
-        disbleUserPanel();
-    }
 });
 
 connection.on("ReceiveName", function (newUserName, userList) {
@@ -116,7 +111,7 @@ function disbleUserPanel() {
     $("#valueinput").val("");
 };
 
-function enableUserPanel(minval, maxval, askPrevious) {
+function enableUserPanel(minval, maxval) {
 
     $("#passbutton").removeClass("disabled");
     $("#valueinput").prop("disabled", false);
@@ -130,6 +125,9 @@ function enableUserPanel(minval, maxval, askPrevious) {
     $("#valueinput").prop("max", maxval);
     if ($("#valueinput").attr("min") > 0) {
         $("#gobutton").html("Wchodzę");
+    }
+    if ($("#valueinput").attr("min") == 0) {
+        $("#passbutton").addClass("disabled");
     }
 };
 
@@ -167,6 +165,44 @@ function colorCards(element) {
     }
 }
 
+function createUserPanel() {
+    var row = document.getElementById("userpanels");
+    var i;
+    for (i = 0; i < userlist.length; i++) {
+
+        var user = userlist[i];
+        var userColumn = document.createElement("div");
+        userColumn.className = "col - 2 border text - center";
+
+        var nameRow = document.createElement("div");
+        nameRow.innerHTML = user.name;
+        userColumn.appendChild(nameRow);
+
+        var actionRow = document.createElement("div");
+        actionRow.innerHTML = user.action;
+        userColumn.appendChild(actionRow);
+
+        row.appendChild(userColumn);
+
+        if (user.active == false) {
+            //userColumn.classList.add("text-secondary");
+        }
+        if (game != null) {
+            if (game.currentuser == user.name) {
+                //userColumn.classList.add("text - primary");
+            }
+        }
+    }
+};
+
+function clearUserPanels() {
+    var row = document.getElementById("userpanels");
+    var i;
+    for (i = 0; i < row.children.length; i++) {
+        row.removeChild(row.children[i]);
+    }
+}
+
 
 
 $("#valueinput").change(function () {
@@ -177,22 +213,37 @@ $("#valueinput").change(function () {
         if ($("#valueinput").attr("min") > 0) {
             $("#gobutton").html("Wchodzę");
         }
+        if ($("#valueinput").attr("min") == 0) {
+            $("#passbutton").addClass("disabled");
+        }
         $("#gobutton").html("Przebijam");
     }
 });
 
 var userlist=[];
 var game;
-function decodeGameInfo(fullinfo) {
+function decodeMessage(fullinfo) {
     userlist = [];
+    game = null;
     var usersInfo = fullinfo.split(":")[0].split(";");
     var gameInfo = fullinfo.split(":")[1];
+
+    decodeUsersInfo(usersInfo);
+    decodeGameinfo(gameInfo);
+};
+
+function decodeUsersInfo(usersInfo) {
     var i;
     for (i = 0; i < usersInfo.length; i++) {
         var newuser = new User(usersInfo[i]);
         userlist.push(newuser);
     }
-    game = new Game(gameInfo);
+};
+
+function decodeGameinfo(gameInfo) {
+    if (gameInfo != "") {
+        game = new Game(gameInfo);
+    }
 };
 
 function getclientuser() {

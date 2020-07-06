@@ -31,13 +31,15 @@ namespace webpoker.Models
         private Card _flop3;
         private Card _turn;
         private Card _river;
+        private int _enterFee = 1;
 
         public Game()
         {
             _activeUsers = Application.Instance.Tables[0].Users;
             _bet = Bets.Preflop;
             StartGame();
-            MaxBid = _activeUsers.Min(x => x.Wallet);
+            MinBid = _enterFee;
+            MaxBid = MinBid;
             _cardSuid = new CardSuit();
         }
 
@@ -60,6 +62,12 @@ namespace webpoker.Models
             }
             FindNextUser();
             FindNextBet();
+
+            if (_bet == null)
+            {
+                GameOver();
+            }
+
             GetGameInfo();
         }
 
@@ -87,6 +95,12 @@ namespace webpoker.Models
             CurrentUser.Pass();
             _activeUsers = Application.Instance.Tables[0].Users.Where(x => x.Active).ToList();
             MessageToSend = "Pass";
+        }
+
+        private void GameOver()
+        {
+            Application.Instance.Tables[0].Game = null;
+            MessageToSend = "";
         }
 
         private void CalculateGameParameters(int value)
