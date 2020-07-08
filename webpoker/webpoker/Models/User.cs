@@ -10,7 +10,7 @@ namespace webpoker.Models
     {
         public string Name { get; set; }
         public int Wallet { get; set; }
-        public int? Action { get; private set; }
+        public string Action { get; private set; }
 
         public bool Active { get; private set; } = true;
 
@@ -30,13 +30,13 @@ namespace webpoker.Models
 
         public void CalculateTotalAction(int action)
         {
-            if (Action ==null)
+            if (Action ==string.Empty)
             {
-                Action = action;
+                Action = action.ToString();
             }
             else
             {
-                Action += action;
+                Action += (Convert.ToInt32(Action)+action).ToString();
             }
         }
 
@@ -46,9 +46,14 @@ namespace webpoker.Models
             Active = true;
         }
 
+        public void SetAction(string action)
+        {
+            Action = action;
+        }
+
         public void Pass()
         {
-            Action = -1;
+            Action = "pass";
             Active = false;
         }
 
@@ -56,6 +61,12 @@ namespace webpoker.Models
         {
             FirstCard = card1;
             SecondCard = card2;
+        }
+
+        public void ResetUserCards()
+        {
+            FirstCard = null;
+            SecondCard = null;
         }
 
         public string GetUserInfo()

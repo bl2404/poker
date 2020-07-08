@@ -7,6 +7,7 @@ namespace webpoker.Enums
 {
     public enum Bets
     {
+        Entrance,
         Preflop,
         Flop,
         Turn,

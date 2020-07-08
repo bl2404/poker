@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections.Generic;
@@ -18,146 +20,144 @@ namespace webpoker.Models
         public int MinBid { get; private set; } = 0;
         public int MaxBid { get; private set; } = 0;
         public int Pool { get; private set; } = 0;
-        public string MessageToSend { get; private set; }
 
+        private Bets _bet;
+        private CardSuit _cardSuit;
 
-        private Bets? _bet;
-        private CardSuit _cardSuid;
-        private bool _newBet = true;
-        private List<User> _activeUsers;
         private int _actionmax = 0;
+        private bool newBet;
+        private bool finish = false;
+
         private Card _flop1;
         private Card _flop2;
         private Card _flop3;
         private Card _turn;
         private Card _river;
+
         private int _enterFee = 1;
 
         public Game()
         {
-            _activeUsers = Application.Instance.Tables[0].Users;
-            _bet = Bets.Preflop;
-            StartGame();
+            CurrentUser=GetActiveUsers().First();
             MinBid = _enterFee;
             MaxBid = MinBid;
-            _cardSuid = new CardSuit();
+            _cardSuit = new CardSuit();
+            _bet = Bets.Entrance;
+            ResetUserActions();
+            foreach (var usr in Application.Instance.Tables[0].Users)
+                usr.ResetUserCards();
         }
 
         public void NextStep(string message)
         {
-            if (_newBet == true)
+            if (newBet)
             {
-                ShowCard();
+                ResetUserActions();
             }
-            _activeUsers = Application.Instance.Tables[0].Users.Where(x=>x.Active).ToList();
-            MaxBid = _activeUsers.Min(x => x.Wallet);
-            if (message == "pass")
-            {
-                Pass();
-            }
-            else
-            {
-                var value = Convert.ToInt32(message);
-                CalculateGameParameters(value);
-            }
+            newBet = false;
+            MaxBid = GetActiveUsers().Min(x => x.Wallet);
+
+
+            CalculateGameParameters(message);
             FindNextUser();
-            FindNextBet();
-
-            if (_bet == null)
-            {
-                GameOver();
-            }
-
-            GetGameInfo();
         }
 
         public string GetGameInfo()
         {
-            string usersInfo= Application.Instance.Tables[0].Users[0].GetUserInfo();
+            var users = Application.Instance.AllUsers.Select(x => x.GetUserInfo()).ToArray();
+            string usersInfo = string.Join(";", users);
             string gameinfo = string.Format("{0}^{1}^{2}^{3}^{4}^{5}^{6}^{7}^{8}^{9}", CurrentUser.Name, MinBid, MaxBid,
-                Pool, MessageToSend,
+                Pool,
                 _flop1?.GetCardDescription() ?? "",
                 _flop2?.GetCardDescription() ?? "",
                 _flop3?.GetCardDescription() ?? "",
                 _turn?.GetCardDescription() ?? "",
-                _river?.GetCardDescription() ?? "");
+                _river?.GetCardDescription() ?? "",
+                finish);
             return string.Format("{0}:{1}", usersInfo, gameinfo);
         }
 
-        private void StartGame()
+        private User[] GetActiveUsers()
         {
-            //CurrentUser = RandomUser();
-            CurrentUser = _activeUsers.First();
+            return Application.Instance.Tables[0].Users.Where(x => x.Active).ToArray();
         }
 
         private void Pass()
         {
             CurrentUser.Pass();
-            _activeUsers = Application.Instance.Tables[0].Users.Where(x => x.Active).ToList();
-            MessageToSend = "Pass";
         }
 
         private void GameOver()
         {
-            Application.Instance.Tables[0].Game = null;
-            MessageToSend = "";
-        }
-
-        private void CalculateGameParameters(int value)
-        {
-            if (value > MinBid)
+            finish = true;
+            foreach (var user in GetActiveUsers())
             {
-                _actionmax = value;
-                MinBid = value;
+                user.SetAction(user.FirstCard.GetCardDescription() + " " + user.SecondCard.GetCardDescription());
             }
-            CurrentUser.RemoveFromWallet(value);
-            CurrentUser.CalculateTotalAction(value);
-            Pool += value;
-            MessageToSend = CurrentUser.Action.ToString();
+                
+            //Application.Instance.Tables[0].Game = null;
+            //MessageToSend = "";
         }
 
-        private void FindNextUser()
+        private void CalculateGameParameters(string message)
         {
-            CurrentUser = _activeUsers.FirstOrDefault(x => x.Action == null);
+            if(Int32.TryParse(message,out int value))
+            {
+                if (value >= MinBid)
+                {
+                    _actionmax = value;
+                    MinBid = value;
+                }
+                CurrentUser.RemoveFromWallet(value);
+                CurrentUser.CalculateTotalAction(value);
+                Pool += value;
+            }
+            else
+            {
+                Pass();
+            }
+        }
+
+        private void FindNextUser() //zwracac usera
+        {
+            CurrentUser = GetActiveUsers().FirstOrDefault(x => x.Action == null);
             if (CurrentUser == null)
             {
-                CurrentUser = _activeUsers.FirstOrDefault(x => x.Action < _actionmax);
+                CurrentUser = GetActiveUsers().FirstOrDefault(x => Convert.ToInt32(x.Action) < _actionmax);
                 if (CurrentUser == null)
                 {
-                    FinishAuction();
+                    StartNewAuction();
                 }
                 else
                 {
-                    MinBid = _actionmax - (int)CurrentUser.Action;
+                    MinBid = _actionmax - Convert.ToInt32(CurrentUser.Action);
                     MaxBid = MinBid;
                 }
             }
         }
 
-        private User RandomUser()
+        private void ResetUserActions()
         {
-            var random = new Random();
-            int index = random.Next(0, _activeUsers.Count - 1);
-            return _activeUsers[index];
-        }
-
-        private void FinishAuction()
-        {
-            foreach (var user in _activeUsers)
+            foreach (var user in GetActiveUsers())
             {
                 user.ResetAction();
             }
+        }
+
+        private void StartNewAuction()
+        {
+            newBet = true;
+            CurrentUser = GetActiveUsers().First();
             MinBid = 0;
             _actionmax = 0;
-            MaxBid = _activeUsers.Min(x => x.Wallet);
-            CurrentUser = _activeUsers.First();
-            _newBet = true;
-
-            foreach(var user in Application.Instance.Tables[0].Users)
+            MaxBid = GetActiveUsers().Min(x => x.Wallet);
+            if (_bet == Bets.River)
+                GameOver();
+            else
             {
-                Debug.WriteLine("user: " + user.Name + " " + user.Wallet);
+                FindNextBet();
+                ShowCard();
             }
-            Debug.WriteLine("poola: " + Pool);
         }
 
         private void FindNextBet()
@@ -166,8 +166,6 @@ namespace webpoker.Models
             int index = (int)_bet+1;
             if (index <= maxval)
                 _bet = (Bets)index;
-            else
-                _bet = null;
         }
 
         private void ShowCard()
@@ -176,21 +174,20 @@ namespace webpoker.Models
             {
                 case Bets.Preflop:
                     foreach (var user in Application.Instance.Tables[0].Users.Where(x => x.Active))
-                        user.GiveUserCards(_cardSuid.TakeCard(), _cardSuid.TakeCard());
+                        user.GiveUserCards(_cardSuit.TakeCard(), _cardSuit.TakeCard());
                     break;
                 case Bets.Flop:
-                    _flop1 = _cardSuid.TakeCard();
-                    _flop2 = _cardSuid.TakeCard();
-                    _flop3 = _cardSuid.TakeCard();
+                    _flop1 = _cardSuit.TakeCard();
+                    _flop2 = _cardSuit.TakeCard();
+                    _flop3 = _cardSuit.TakeCard();
                     break;
                 case Bets.Turn:
-                    _turn = _cardSuid.TakeCard();
+                    _turn = _cardSuit.TakeCard();
                     break;
                 case Bets.River:
-                    _river = _cardSuid.TakeCard();
+                    _river = _cardSuit.TakeCard();
                     break;
             }
-            _newBet = false;
         }
     }
 }

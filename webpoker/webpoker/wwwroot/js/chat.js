@@ -1,14 +1,6 @@
-﻿"use strict";
-
-var adminName = $("#adminname").html();
+﻿var adminName = $("#adminname").html();
 var clientName = $("#namefield").html();
-
-if (adminName != clientName) {
-    disbleUserPanel();
-}
-else {
-    preparePanelForAdmin();
-}
+resetView();
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
@@ -23,9 +15,17 @@ connection.on("ReceiveMessage", function (sender, message) {
     createUserPanel();
 
     if (game != null) {
+        $("#pool").html(game.pool);
+
+
+        if (game.finish == "True") {
+            resetView();
+            return;
+        }
+
         showCards();
 
-        $("#pool").html(game.pool);
+
         var clientName = $("#namefield").html();
         if (clientName == game.currentuser) {
             enableUserPanel(game.minbid, game.maxbid);
@@ -35,33 +35,6 @@ connection.on("ReceiveMessage", function (sender, message) {
         }
     }
 
-});
-
-connection.on("ReceiveName", function (newUserName, userList) {
-    var row = document.getElementById("users");
-    var clientName = $("#namefield").html();
-    var i;
-
-    if (row.children.length == 0) {
-        for (i = 0; i < userList.length; i++) {
-            if (userList[i] != clientName) {
-                createUser(userList[i]);
-            }
-        }
-    }
-    else {
-        var alreadyExist = false;
-
-        for (i = 0; i < row.children.length; i++) {
-            if (row.children[i].innerHTML == newUserName) {
-                alreadyExist = true;
-                break;
-            }
-        }
-        if (alreadyExist == false && newUserName != clientName) {
-            createUser(newUserName);
-        }
-    }
 });
 
 $("#gobutton").click(function () {
@@ -85,19 +58,6 @@ $("#passbutton").click(function () {
     var username = $("#namefield").html();
     connection.invoke("SendMessage", username, "pass");
 });
-
-function createUser(name) {
-    var row = document.getElementById("users");
-    var actionRow = document.getElementById("actions");
-    var div = document.createElement("div");
-    div.className = "col";
-    div.innerHTML = name;
-    row.appendChild(div);
-
-    var divAction = document.createElement("div");
-    divAction.className = "col";
-    actionRow.appendChild(divAction);
-};
 
 function disbleUserPanel() {
 
@@ -136,6 +96,8 @@ function preparePanelForAdmin() {
     $("#valueinput").prop("disabled", true);
     $("#gobutton").html("Start");
     $("#info").html("Wait for users and start the game");
+    $("#valueinput").val("");
+    $("#gobutton").removeClass("disabled");
 };
 
 function showCards() {
@@ -149,7 +111,6 @@ function showCards() {
     $("#river").html(game.river);
     colorCards(document.getElementById("handcards"));
     colorCards(document.getElementById("tablecards"));
-
 }
 
 function colorCards(element) {
@@ -196,11 +157,7 @@ function createUserPanel() {
 };
 
 function clearUserPanels() {
-    var row = document.getElementById("userpanels");
-    var i;
-    for (i = 0; i < row.children.length; i++) {
-        row.removeChild(row.children[i]);
-    }
+    $("#userpanels").empty();
 }
 
 
@@ -256,6 +213,15 @@ function getclientuser() {
     }
 };
 
+function resetView() {
+    if (adminName != clientName) {
+        disbleUserPanel();
+    }
+    else {
+        preparePanelForAdmin();
+    }
+}
+
 class User {
     constructor(userInfo) {
 
@@ -276,11 +242,11 @@ class Game {
         this.minbid = splittedInfo[1];
         this.maxbid = splittedInfo[2];
         this.pool = splittedInfo[3];
-        this.recivedmessage = splittedInfo[4];
-        this.flop1 = splittedInfo[5];
-        this.flop2 = splittedInfo[6];
-        this.flop3 = splittedInfo[7];
-        this.turn = splittedInfo[8];
-        this.river = splittedInfo[9];
+        this.flop1 = splittedInfo[4];
+        this.flop2 = splittedInfo[5];
+        this.flop3 = splittedInfo[6];
+        this.turn = splittedInfo[7];
+        this.river = splittedInfo[8];
+        this.finish = splittedInfo[9];
     }
 }
