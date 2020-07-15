@@ -43,7 +43,7 @@ namespace webpoker.Models
             MaxBid = MinBid;
             _cardSuit = new CardSuit();
             _bet = Bets.Entrance;
-            ResetUserActions();
+            ResetUserActions(GetAllUsers());
             foreach (var usr in Application.Instance.Tables[0].Users)
                 usr.ResetUserCards();
         }
@@ -52,7 +52,7 @@ namespace webpoker.Models
         {
             if (newBet)
             {
-                ResetUserActions();
+                ResetUserActions(GetActiveUsers());
             }
             newBet = false;
             MaxBid = GetActiveUsers().Min(x => x.Wallet);
@@ -82,6 +82,11 @@ namespace webpoker.Models
             return Application.Instance.Tables[0].Users.Where(x => x.Active).ToArray();
         }
 
+        private User[] GetAllUsers()
+        {
+            return Application.Instance.Tables[0].Users.ToArray();
+        }
+
         private void Pass()
         {
             CurrentUser.Pass();
@@ -92,7 +97,9 @@ namespace webpoker.Models
             finish = true;
             foreach (var user in GetActiveUsers())
             {
-                user.SetAction(user.FirstCard.GetCardDescription() + " " + user.SecondCard.GetCardDescription());
+                string card1 = user.FirstCard?.GetCardDescription() ?? "";
+                string card2 = user.SecondCard?.GetCardDescription() ?? "";
+                user.SetAction(string.Format("{0} {1}", card1, card2));
             }
                 
             //Application.Instance.Tables[0].Game = null;
@@ -136,9 +143,9 @@ namespace webpoker.Models
             }
         }
 
-        private void ResetUserActions()
+        private void ResetUserActions(User[] users)
         {
-            foreach (var user in GetActiveUsers())
+            foreach (var user in users)
             {
                 user.ResetAction();
             }
@@ -151,7 +158,7 @@ namespace webpoker.Models
             MinBid = 0;
             _actionmax = 0;
             MaxBid = GetActiveUsers().Min(x => x.Wallet);
-            if (_bet == Bets.River)
+            if (_bet == Bets.River || GetActiveUsers().Count()==1)
                 GameOver();
             else
             {
@@ -173,7 +180,7 @@ namespace webpoker.Models
             switch (_bet)
             {
                 case Bets.Preflop:
-                    foreach (var user in Application.Instance.Tables[0].Users.Where(x => x.Active))
+                    foreach (var user in GetActiveUsers())
                         user.GiveUserCards(_cardSuit.TakeCard(), _cardSuit.TakeCard());
                     break;
                 case Bets.Flop:
