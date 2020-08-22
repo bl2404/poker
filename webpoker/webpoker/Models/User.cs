@@ -18,6 +18,8 @@ namespace webpoker.Models
 
         public Card SecondCard { get; private set; }
 
+        public HandChecker Result { get; set; }
+
         public void RemoveFromWallet(int value)
         {
             Wallet = Wallet - value;

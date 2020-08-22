@@ -38,22 +38,6 @@ namespace webpoker.Models
 
         public Game()
         {
-            _flop1 = new Card(Figures.Clubs, Numbers.Nine);
-            _flop2 = new Card(Figures.Diamonds, Numbers.Eight);
-            _flop3 = new Card(Figures.Clubs, Numbers.J);
-            _turn = new Card(Figures.Heart, Numbers.Seven);
-            _river = new Card(Figures.Spades, Numbers.A);
-            var hand1 = new Card(Figures.Heart, Numbers.Six);
-            var hand2 = new Card(Figures.Diamonds, Numbers.Five);
-
-            new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-
-
-
-
-
-
-
             CurrentUser = GetActiveUsers().First();
             MinBid = _enterFee;
             MaxBid = MinBid;
@@ -111,16 +95,35 @@ namespace webpoker.Models
         private void GameOver()
         {
             finish = true;
+
             foreach (var user in GetActiveUsers())
             {
+                user.Result = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, user.FirstCard, user.SecondCard);
                 string card1 = user.FirstCard?.GetCardDescription() ?? "";
                 string card2 = user.SecondCard?.GetCardDescription() ?? "";
-                user.SetAction(string.Format("{0} {1}", card1, card2));
+                user.SetAction(string.Format("{0} {1} - {2}", card1, card2,user.Result.Hand));
             }
-                
+
+            var winners = FindWinners();
+            Math.DivRem(Pool, winners.Count(), out int rest);
+            foreach (var user in winners)
+            {
+                user.Wallet += (Pool - rest) / winners.Count();
+            }
+            Pool = rest;
+
             //Application.Instance.Tables[0].Game = null;
             //MessageToSend = "";
         }
+
+        private User[] FindWinners()
+        {
+            var winCombination = GetActiveUsers().OrderByDescending(x => x.Result.Hand).First().Result.Hand;
+            var highCard = GetActiveUsers().Where(x => x.Result.Hand == winCombination).
+                OrderByDescending(y => y.Result.HighCard).First().Result.HighCard;
+            return GetActiveUsers().Where(x => x.Result.Hand == winCombination).
+                Where(y => y.Result.HighCard == highCard).ToArray();
+        } 
 
         private void CalculateGameParameters(string message)
         {
