@@ -96,7 +96,7 @@ namespace webpoker.Models
             return false;
         }
 
-        public bool CheckForOnePair()
+        private bool CheckForOnePair()
         {
             if (groupedInPairs.First().Count == 2)
             {
@@ -107,7 +107,7 @@ namespace webpoker.Models
                 return false;
         }
 
-        public bool CheckForTwoPairs()
+        private bool CheckForTwoPairs()
         {
             if (groupedInPairs[0].Count == 2 && groupedInPairs[1].Count == 2)
             {
@@ -118,7 +118,7 @@ namespace webpoker.Models
                 return false;
         }
 
-        public bool CheckForThree()
+        private bool CheckForThree()
         {
             if (groupedInPairs.First().Count == 3)
             {
@@ -129,7 +129,7 @@ namespace webpoker.Models
                 return false;
         }
 
-        public bool CheckForFull()
+        private bool CheckForFull()
         {
             if (groupedInPairs[0].Count == 3 && groupedInPairs[1].Count == 2)
             {
@@ -140,7 +140,7 @@ namespace webpoker.Models
                 return false; 
         }
 
-        public bool CheckForFour()
+        private bool CheckForFour()
         {
             if (groupedInPairs.First().Count == 4)
             {
@@ -151,7 +151,7 @@ namespace webpoker.Models
                 return false;
         }
 
-        public bool CheckForColor()
+        private bool CheckForColor()
         {
             if (groupedInColors.First().Count == 5)
             {
@@ -162,7 +162,7 @@ namespace webpoker.Models
                 return false;
         }
 
-        public bool CheckForPoker()
+        private bool CheckForPoker()
         {
             if (CheckForStraight() == true && CheckForColor() == true)
             {

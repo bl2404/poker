@@ -19,26 +19,24 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForOnePair();
 
-            Assert.AreEqual(true, actual);
+            Assert.AreEqual(Hand.OnePair, handChecker.Hand);
         }
 
         [TestMethod]
         public void CheckForSinglePairFalse()
         {
             Card _flop1 = new Card(Figures.Clubs, Numbers.Nine);
-            Card _flop2 = new Card(Figures.Diamonds, Numbers.Eight);
+            Card _flop2 = new Card(Figures.Diamonds, Numbers.Six);
             Card _flop3 = new Card(Figures.Clubs, Numbers.J);
-            Card _turn = new Card(Figures.Heart, Numbers.K);
+            Card _turn = new Card(Figures.Heart, Numbers.Five);
             Card _river = new Card(Figures.Spades, Numbers.A);
             Card hand1 = new Card(Figures.Heart, Numbers.Six);
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForOnePair();
 
-            Assert.AreEqual(false, actual);
+            Assert.AreNotEqual(Hand.OnePair, handChecker.Hand);
         }
 
         [TestMethod]
@@ -53,9 +51,9 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForTwoPairs();
 
-            Assert.AreEqual(true, actual);
+            Assert.AreEqual(Hand.TwoPair, handChecker.Hand);
+            Assert.AreEqual(Numbers.J, handChecker.HighCard.Number);
         }
 
         [TestMethod]
@@ -70,9 +68,8 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForTwoPairs();
 
-            Assert.AreEqual(false, actual);
+            Assert.AreNotEqual(Hand.TwoPair, handChecker.Hand);
         }
 
         [TestMethod]
@@ -114,16 +111,16 @@ namespace webpoker_UnitTests
         {
             Card _flop1 = new Card(Figures.Clubs, Numbers.Nine);
             Card _flop2 = new Card(Figures.Diamonds, Numbers.Eight);
-            Card _flop3 = new Card(Figures.Clubs, Numbers.J);
-            Card _turn = new Card(Figures.Heart, Numbers.J);
+            Card _flop3 = new Card(Figures.Clubs, Numbers.Six);
+            Card _turn = new Card(Figures.Heart, Numbers.Six);
             Card _river = new Card(Figures.Spades, Numbers.A);
             Card hand1 = new Card(Figures.Heart, Numbers.Six);
             Card hand2 = new Card(Figures.Diamonds, Numbers.J);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForThree();
-
-            Assert.AreEqual(true, actual);
+ 
+            Assert.AreEqual(Hand.Three, handChecker.Hand);
+            Assert.AreEqual(Numbers.Six, handChecker.HighCard.Number);
         }
 
         [TestMethod]
@@ -138,15 +135,14 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForThree();
 
-            Assert.AreEqual(false, actual);
+            Assert.AreNotEqual(Hand.Three, handChecker.Hand);
         }
 
         [TestMethod]
         public void CheckForFourTrue()
         {
-            Card _flop1 = new Card(Figures.Clubs, Numbers.Nine);
+            Card _flop1 = new Card(Figures.Clubs, Numbers.A);
             Card _flop2 = new Card(Figures.Diamonds, Numbers.Eight);
             Card _flop3 = new Card(Figures.Clubs, Numbers.J);
             Card _turn = new Card(Figures.Heart, Numbers.J);
@@ -155,9 +151,10 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.J);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForFour();
 
-            Assert.AreEqual(true, actual);
+            Assert.AreEqual(Hand.Four, handChecker.Hand);
+            Assert.AreEqual(Numbers.J, handChecker.HighCard.Number);
+
         }
 
         [TestMethod]
@@ -172,9 +169,8 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForFour();
 
-            Assert.AreEqual(false, actual);
+            Assert.AreNotEqual(Hand.Four, handChecker.Hand);
         }
 
         [TestMethod]
@@ -189,9 +185,9 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForColor();
 
-            Assert.AreEqual(true, actual);
+            Assert.AreEqual(Hand.Flush, handChecker.Hand);
+            Assert.AreEqual(Numbers.J, handChecker.HighCard.Number);
         }
 
 
@@ -207,9 +203,8 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Five);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForColor();
 
-            Assert.AreEqual(false, actual);
+            Assert.AreNotEqual(Hand.Flush, handChecker.Hand);
         }
 
         [TestMethod]
@@ -224,9 +219,9 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.A);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForFull();
 
-            Assert.AreEqual(true, actual);
+            Assert.AreEqual(Hand.Full, handChecker.Hand);
+            Assert.AreEqual(Numbers.Nine, handChecker.HighCard.Number);
         }
 
 
@@ -242,9 +237,8 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Nine);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForFull();
 
-            Assert.AreEqual(false, actual);
+            Assert.AreNotEqual(Hand.Full, handChecker.Hand);
         }
 
         [TestMethod]
@@ -259,9 +253,9 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.A);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForPoker();
 
-            Assert.AreEqual(true, actual);
+            Assert.AreEqual(Hand.Poker, handChecker.Hand);
+            Assert.AreEqual(Numbers.A, handChecker.HighCard.Number);
         }
 
 
@@ -277,9 +271,8 @@ namespace webpoker_UnitTests
             Card hand2 = new Card(Figures.Diamonds, Numbers.Nine);
 
             var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
-            var actual = handChecker.CheckForPoker();
 
-            Assert.AreEqual(false, actual);
+            Assert.AreNotEqual(Hand.Full, handChecker.Hand);
         }
     }
 }
