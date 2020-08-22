@@ -28,17 +28,33 @@ namespace webpoker.Models
         private bool newBet;
         private bool finish = false;
 
-        private Card _flop1;
-        private Card _flop2;
-        private Card _flop3;
-        private Card _turn;
-        private Card _river;
+        public Card _flop1 { get; private set; }
+        public Card _flop2 { get; private set; }
+        public Card _flop3 { get; private set; }
+        public Card _turn { get; private set; }
+        public Card _river { get; private set; }
 
         private int _enterFee = 1;
 
         public Game()
         {
-            CurrentUser=GetActiveUsers().First();
+            _flop1 = new Card(Figures.Clubs, Numbers.Nine);
+            _flop2 = new Card(Figures.Diamonds, Numbers.Eight);
+            _flop3 = new Card(Figures.Clubs, Numbers.J);
+            _turn = new Card(Figures.Heart, Numbers.Seven);
+            _river = new Card(Figures.Spades, Numbers.A);
+            var hand1 = new Card(Figures.Heart, Numbers.Six);
+            var hand2 = new Card(Figures.Diamonds, Numbers.Five);
+
+            new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
+
+
+
+
+
+
+
+            CurrentUser = GetActiveUsers().First();
             MinBid = _enterFee;
             MaxBid = MinBid;
             _cardSuit = new CardSuit();

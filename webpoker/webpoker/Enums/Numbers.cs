@@ -9,30 +9,30 @@ namespace webpoker.Enums
     public enum Numbers
     {
         [Display(Name = "2")]
-        Two,
+        Two=2,
         [Display(Name = "3")]
-        Three,
+        Three=3,
         [Display(Name = "4")]
-        Four,
+        Four=4,
         [Display(Name = "5")]
-        Five,
+        Five=5,
         [Display(Name = "6")]
-        Six,
+        Six=6,
         [Display(Name = "7")]
-        Seven,
+        Seven=7,
         [Display(Name = "8")]
-        Eight,
+        Eight=8,
         [Display(Name = "9")]
-        Nine,
+        Nine=9,
         [Display(Name = "10")]
-        Ten,
+        Ten=10,
         [Display(Name = "J")]
-        J,
+        J=11,
         [Display(Name = "Q")]
-        Q,
+        Q=12,
         [Display(Name = "K")]
-        K,
+        K=13,
         [Display(Name = "A")]
-        A
+        A=14
     }
 }
