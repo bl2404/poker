@@ -132,7 +132,7 @@ namespace webpoker.Models
         {
             var winCombination = GetActiveUsers().OrderByDescending(x => x.Result.Hand).First().Result.Hand;
             var highCard = GetActiveUsers().Where(x => x.Result.Hand == winCombination).
-                OrderByDescending(y => y.Result.HighCard).First().Result.HighCard;
+                OrderByDescending(y => y.Result.HighCard.Number).First().Result.HighCard;
             return GetActiveUsers().Where(x => x.Result.Hand == winCombination).
                 Where(y => y.Result.HighCard == highCard).ToArray();
         } 
@@ -159,15 +159,23 @@ namespace webpoker.Models
         private void FindNextUser() //zwracac usera
         {
             CurrentUser = GetActiveUsers().FirstOrDefault(x => x.Action == null);
+            if (_bet == Bets.River)
+                Debug.WriteLine("river start");
             if (CurrentUser == null)
             {
+                if (_bet == Bets.River)
+                    Debug.WriteLine("river primary user null");
                 CurrentUser = GetActiveUsers().FirstOrDefault(x => Convert.ToInt32(x.Action) < _actionmax);
                 if (CurrentUser == null)
                 {
+                    if (_bet == Bets.River)
+                        Debug.WriteLine("river secondary user null");
                     StartNewAuction();
                 }
                 else
                 {
+                    if (_bet == Bets.River)
+                        Debug.WriteLine("river bids set");
                     MinBid = _actionmax - Convert.ToInt32(CurrentUser.Action);
                     MaxBid = MinBid;
                 }
