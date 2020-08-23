@@ -1,6 +1,9 @@
 ﻿using System;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
 using System.IO;
+using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GuiSeleniumTests
 {
@@ -8,11 +11,41 @@ namespace GuiSeleniumTests
     {
         static void Main(string[] args)
         {
-            var dir=Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent;
-            var driver = new ChromeDriver(dir.ToString());
-            driver.Navigate().GoToUrl("https://localhost:44342/");
-            driver.Close();
-            Console.ReadKey();
+            BidOnLastCard();
+            Environment.Exit(0);
         }
+
+        private static void BidOnLastCard()
+        {
+            User abc = new User("abc");
+            User xyz = new User("xyz");
+            abc.ClickGoButton();
+
+            //enter
+            abc.ClickGoButton();
+            xyz.ClickGoButton();
+
+            //flop
+            abc.ClickGoButton();
+            xyz.ClickGoButton();
+
+            //turn
+            abc.ClickGoButton();
+            xyz.ClickGoButton();
+
+            //river
+            abc.ClickGoButton();
+            xyz.ClickGoButton();
+
+            abc.Przebij(5);
+            abc.ClickGoButton();
+            xyz.ClickGoButton();
+
+            Assert.AreEqual("Wait for users and start the game", abc.GetInfo());
+
+            abc.Close();
+            xyz.Close();
+        }
+
     }
 }

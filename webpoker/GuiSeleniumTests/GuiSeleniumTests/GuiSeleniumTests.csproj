@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
     <PackageReference Include="OpenQA.Selenium.Winium" Version="1.0.0.4" />
   </ItemGroup>
 
