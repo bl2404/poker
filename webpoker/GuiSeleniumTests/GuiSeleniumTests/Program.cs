@@ -11,10 +11,7 @@ namespace GuiSeleniumTests
     {
         static void Main(string[] args)
         {
-            for (int i = 0; i < 10; i++)
-            {
-                BidOnLastCard();
-            }
+            BidOnLastCard();
             Environment.Exit(0);
         }
 
