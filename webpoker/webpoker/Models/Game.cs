@@ -95,16 +95,28 @@ namespace webpoker.Models
         private void GameOver()
         {
             finish = true;
-
+            bool finishErlierByPass = false;
+            if (_flop1 == null || _flop2 == null || _flop3 == null || _turn == null || _river == null)
+            {
+                finishErlierByPass = true;
+            }
             foreach (var user in GetActiveUsers())
             {
-                user.Result = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, user.FirstCard, user.SecondCard);
+                if(finishErlierByPass==false)
+                {
+                    user.Result = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, user.FirstCard, user.SecondCard);
+                }
                 string card1 = user.FirstCard?.GetCardDescription() ?? "";
                 string card2 = user.SecondCard?.GetCardDescription() ?? "";
-                user.SetAction(string.Format("{0} {1} - {2}", card1, card2,user.Result.Hand));
+                user.SetAction(string.Format("{0} {1} - {2}", card1, card2, user.Result?.Hand.ToString() ?? ""));
             }
 
-            var winners = FindWinners();
+            User[] winners;
+            if (finishErlierByPass)
+                winners = new User[] { GetActiveUsers().First() };
+            else
+                winners = FindWinners();
+
             Math.DivRem(Pool, winners.Count(), out int rest);
             foreach (var user in winners)
             {

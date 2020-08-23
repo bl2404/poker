@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using webpoker.Enums;
 
 namespace webpoker.Models
 {
@@ -46,6 +47,7 @@ namespace webpoker.Models
         {
             Action = null;
             Active = true;
+            Result = null;
         }
 
         public void SetAction(string action)

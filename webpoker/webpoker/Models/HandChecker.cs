@@ -79,6 +79,8 @@ namespace webpoker.Models
 
             for (int i = 1; i < orderedCards.Count(); i++)
             {
+                if ((int)orderedCards[i].Number - (int)orderedCards[i - 1].Number == 0)
+                    continue;
                 if ((int)orderedCards[i].Number - (int)orderedCards[i - 1].Number == -1)
                 {
                     if(sum==0)

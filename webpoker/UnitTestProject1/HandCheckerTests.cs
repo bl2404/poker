@@ -91,6 +91,24 @@ namespace webpoker_UnitTests
         }
 
         [TestMethod]
+        public void CheckForStraightTrue2()
+        {
+            Card _flop1 = new Card(Figures.Heart, Numbers.Six);
+            Card _flop2 = new Card(Figures.Spades, Numbers.Eight);
+            Card _flop3 = new Card(Figures.Clubs, Numbers.Nine);
+            Card _turn = new Card(Figures.Diamonds, Numbers.Seven);
+            Card _river = new Card(Figures.Spades, Numbers.Ten);
+            Card hand1 = new Card(Figures.Spades, Numbers.Three);
+            Card hand2 = new Card(Figures.Heart, Numbers.Seven);
+
+            var handChecker = new HandChecker(_flop1, _flop2, _flop3, _turn, _river, hand1, hand2);
+
+
+            Assert.AreEqual(Hand.Straight, handChecker.Hand);
+            Assert.AreEqual(Numbers.Ten, handChecker.HighCard.Number);
+        }
+
+        [TestMethod]
         public void CheckForStraightFalse()
         {
             Card _flop1 = new Card(Figures.Clubs, Numbers.Nine);

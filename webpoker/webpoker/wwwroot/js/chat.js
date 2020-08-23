@@ -13,6 +13,9 @@ connection.on("ReceiveMessage", function (sender, message) {
     decodeMessage(message);
     clearUserPanels();
     createUserPanel();
+    var clUser = getclientuser().name;
+    var clWallet = getclientuser().wallet;
+    $("#wallet").html(getclientuser().wallet);
 
     if (game != null) {
         $("#pool").html(game.pool);
@@ -43,11 +46,11 @@ $("#gobutton").click(function () {
     }
     var message = $("#valueinput").val();
     var username = $("#namefield").html();
-    var money = $("#wallet").html();
-    if (message != "") {
-        money = money - message;
-    }
-    $("#wallet").html(money);
+    //var money = $("#wallet").html();
+    //if (message != "") {
+    //    money = money - message;
+    //}
+    //$("#wallet").html(money);
     connection.invoke("SendMessage", username, message);
 });
 
