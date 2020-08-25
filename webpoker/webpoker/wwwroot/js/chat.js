@@ -11,10 +11,11 @@ connection.start().then(function () {
 
 connection.on("ReceiveMessage", function (sender, message) {
     decodeMessage(message);
+    if(game!=null)//admin jest wlasniwoscia game a nie table. Zmienic!!!
+        adminName = game.admin;
+    console.log(adminName);
     clearUserPanels();
     createUserPanel();
-    var clUser = getclientuser().name;
-    var clWallet = getclientuser().wallet;
     $("#wallet").html(getclientuser().wallet);
 
     if (game != null) {
@@ -46,12 +47,8 @@ $("#gobutton").click(function () {
     }
     var message = $("#valueinput").val();
     var username = $("#namefield").html();
-    //var money = $("#wallet").html();
-    //if (message != "") {
-    //    money = money - message;
-    //}
-    //$("#wallet").html(money);
-    connection.invoke("SendMessage", username, message);
+
+    connection.invoke("SendMessage", username, message,true);
 });
 
 $("#passbutton").click(function () {
@@ -59,7 +56,7 @@ $("#passbutton").click(function () {
         return;
     }
     var username = $("#namefield").html();
-    connection.invoke("SendMessage", username, "pass");
+    connection.invoke("SendMessage", username, "pass",true);
 });
 
 function disbleUserPanel() {
@@ -164,7 +161,6 @@ function clearUserPanels() {
 }
 
 
-
 $("#valueinput").change(function () {
     if ($("#valueinput").val() == 0 || $("#valueinput").val() == null) {
         $("#gobutton").html("Czekam");
@@ -225,6 +221,16 @@ function resetView() {
     }
 }
 
+window.onbeforeunload = function () {
+    return '';
+};
+
+window.onunload = function () { //odchodzenie przed rozpoczeciem gry
+    var username = $("#namefield").html();
+    connection.invoke("SendMessage", username, "pass", false);
+    return '';
+};
+
 class User {
     constructor(userInfo) {
 
@@ -251,5 +257,6 @@ class Game {
         this.turn = splittedInfo[7];
         this.river = splittedInfo[8];
         this.finish = splittedInfo[9];
+        this.admin = splittedInfo[10];
     }
 }

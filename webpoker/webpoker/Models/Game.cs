@@ -64,16 +64,17 @@ namespace webpoker.Models
 
         public string GetGameInfo()
         {
-            var users = Application.Instance.AllUsers.Select(x => x.GetUserInfo()).ToArray();
+            var users = GetAllUsers().Select(x => x.GetUserInfo()).ToArray();
             string usersInfo = string.Join(";", users);
-            string gameinfo = string.Format("{0}^{1}^{2}^{3}^{4}^{5}^{6}^{7}^{8}^{9}", CurrentUser.Name, MinBid, MaxBid,
+            string gameinfo = string.Format("{0}^{1}^{2}^{3}^{4}^{5}^{6}^{7}^{8}^{9}^{10}", CurrentUser.Name, MinBid, MaxBid,
                 Pool,
                 _flop1?.GetCardDescription() ?? "",
                 _flop2?.GetCardDescription() ?? "",
                 _flop3?.GetCardDescription() ?? "",
                 _turn?.GetCardDescription() ?? "",
                 _river?.GetCardDescription() ?? "",
-                finish);
+                finish,
+                Application.Instance.Tables[0].Admin.Name);
             return string.Format("{0}:{1}", usersInfo, gameinfo);
         }
 
@@ -159,23 +160,15 @@ namespace webpoker.Models
         private void FindNextUser() //zwracac usera
         {
             CurrentUser = GetActiveUsers().FirstOrDefault(x => x.Action == null);
-            if (_bet == Bets.River)
-                Debug.WriteLine("river start");
             if (CurrentUser == null)
             {
-                if (_bet == Bets.River)
-                    Debug.WriteLine("river primary user null");
                 CurrentUser = GetActiveUsers().FirstOrDefault(x => Convert.ToInt32(x.Action) < _actionmax);
                 if (CurrentUser == null)
                 {
-                    if (_bet == Bets.River)
-                        Debug.WriteLine("river secondary user null");
                     StartNewAuction();
                 }
                 else
                 {
-                    if (_bet == Bets.River)
-                        Debug.WriteLine("river bids set");
                     MinBid = _actionmax - Convert.ToInt32(CurrentUser.Action);
                     MaxBid = MinBid;
                 }
