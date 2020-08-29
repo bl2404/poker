@@ -11,8 +11,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using webpoker.Enums;
+using webpoker.Models;
 
-namespace webpoker.Models
+namespace webpoker.GameModels
 {
     public class Game
     {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using webpoker.Enums;
+using webpoker.GameModels;
 
 namespace webpoker.Models
 {

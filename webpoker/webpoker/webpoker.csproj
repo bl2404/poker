@@ -20,4 +20,8 @@
     <PackageReference Include="SyntaxHighlighter" Version="3.0.83" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Home\" />
+  </ItemGroup>
+
 </Project>

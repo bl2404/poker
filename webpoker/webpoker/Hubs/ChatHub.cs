@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
 using webpoker.Models;
+using webpoker.GameModels;
 
 namespace webpoker.Hubs
 {

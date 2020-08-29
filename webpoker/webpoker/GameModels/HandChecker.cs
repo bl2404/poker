@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using webpoker.Enums;
 
-namespace webpoker.Models
+namespace webpoker.GameModels
 {
     public class HandChecker
     {

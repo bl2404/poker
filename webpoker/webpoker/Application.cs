@@ -12,13 +12,6 @@ namespace webpoker
         {
             Tables = new List<Table>();
             AllUsers = new List<Models.User>();
-
-            //temporary
-            Table game = new Table();
-            game.Name = "game1";
-            Tables.Add(game);
-            //
-
             Instance = this;
         }
         public List<Table> Tables { get; set; }

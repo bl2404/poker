@@ -61,7 +61,7 @@ namespace webpoker
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=CreateUser}/{id?}");
+                    pattern: "{controller=User}/{action=CreateUser}/{id?}");
                 endpoints.MapHub<ChatHub>("/chathub");
             });
         }
