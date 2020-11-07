@@ -3,41 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using System.Timers;
 using webpoker.Models;
 using webpoker.GameModels;
+using System.Diagnostics;
 
 namespace webpoker.Hubs
 {
     public class ChatHub : Hub
     {
-        public async Task SendMessage(string sender,string message, bool joinGame)
+        public ChatHub()
         {
-            Table table = Application.Instance.Tables[0];
+            //Instance = this;
+            Application.Instance.ChatHub = this;
+        }
+        public void SendMessage(string sender,string message, bool joinGame)
+        {
+            Table table = Application.Instance.Tables.First(x => x.Users.Any(u => u.Name == sender));
 
             if (message == "")
             {
-                table.Game = new Game();
+                table.Game = new Game(table);
             }
             else
             {
-                table.Game.NextStep(message);
+                if(table.Game!=null)
+                    table.Game.NextStep(message);
             }
 
             if (joinGame == false)
             {
-                Application.Instance.Tables[0].Users.Remove(Application.Instance.Tables[0].Users.First(x => x.Name == sender));
+                table.Users.Remove(table.Users.First(x => x.Name == sender));
             }
 
-            if (!Application.Instance.Tables[0].Users.Contains(Application.Instance.Tables[0].Admin))
-                Application.Instance.Tables[0].Admin = Application.Instance.Tables[0].Users[0];
-
-            await Clients.All.SendAsync("ReceiveMessage", sender, table.Game.GetGameInfo());
+            Clients.Group(table.Name).SendAsync("ReceiveMessage", sender, table.Game.GetGameInfo());
         }
 
         public async Task SendName(string username)
         {
-            var users = Application.Instance.Tables[0].Users.Select(x => x.GetUserInfo()).ToArray();
-            await Clients.All.SendAsync("ReceiveMessage", username, string.Join(";",users)+":");
+            Table table = Application.Instance.Tables.First(x => x.Users.Any(u => u.Name == username));
+            await JoinGroup(table.Name).ConfigureAwait(false);
+            var users = table.Users.Select(x => x.GetUserInfo()).ToArray();
+            await Clients.Group(table.Name).SendAsync("ReceiveMessage", username, string.Join(";",users)+":");
         }
+
+        private Task JoinGroup(string name)
+        {
+            return Groups.AddToGroupAsync(Context.ConnectionId, name);
+        }
+
+
+        //public static ChatHub Instance { get; private set; }
     }
 }

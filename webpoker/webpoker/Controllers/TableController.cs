@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using webpoker.Models;
 using System.Web;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace webpoker.Controllers
 {
@@ -26,8 +27,11 @@ namespace webpoker.Controllers
 
         public IActionResult SubmitTableCreation(Table table)
         {
-            Application.Instance.Tables.Add(table);
-            table.Admin = Application.Instance.AllUsers.First(x => x.Name == HttpContext.Session.GetString("username"));
+            if (!Application.Instance.Tables.Any(x => x.Name == table.Name))
+            {
+                Application.Instance.Tables.Add(table);
+            }
+
             return RedirectToAction("Tables");
         }
 
@@ -36,22 +40,32 @@ namespace webpoker.Controllers
             return View("Tables",Application.Instance.Tables);
         }
 
-        public ActionResult JoinTable()
+        public ActionResult JoinTable(string tableName)
         {
-            var userlist = Application.Instance.Tables[0].Users;
+            var table = Application.Instance.Tables.First(x => x.Name == tableName);
+            var userlist = table.Users;
             var clientName = HttpContext.Session.GetString("username");
-            if (!userlist.Any(x => x.Name == clientName))
-            {
-                Application.Instance.Tables[0].Users.Add(Application.Instance.AllUsers.First
-                    (x => x.Name == clientName));
-            }
-            return RedirectToAction("Game", new { @id = Application.Instance.Tables[0].Name });
+
+            if (Application.Instance.Tables.Any(x => x.Users.Any(y => y.Name == clientName)))
+                return RedirectToAction("Tables");
+            if(table.Game!=null && table.Game.Finish==false)
+                return RedirectToAction("Tables");
+
+            table.Users.Add(Application.Instance.AllUsers.First(x => x.Name == clientName));
+            return RedirectToAction("Game", new { @id = tableName  }) ;
         }
 
-        public IActionResult Game(Table table)
+        public IActionResult Game()
         {
-            Debug.WriteLine(table.Name);
-            return View(Application.Instance.Tables[0]);
+            var tableName = HttpContext.Request.GetDisplayUrl().Split('/').Last();
+            var table = Application.Instance.Tables.First(x => x.Name == tableName);
+
+            return View(table);
+        }
+
+        public IActionResult Back()
+        {
+            return RedirectToAction("Tables");
         }
     }
 }

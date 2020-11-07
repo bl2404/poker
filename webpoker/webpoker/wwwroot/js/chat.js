@@ -11,9 +11,8 @@ connection.start().then(function () {
 
 connection.on("ReceiveMessage", function (sender, message) {
     decodeMessage(message);
-    if(game!=null)//admin jest wlasniwoscia game a nie table. Zmienic!!!
+    if(game!=null)
         adminName = game.admin;
-    console.log(adminName);
     clearUserPanels();
     createUserPanel();
     $("#wallet").html(getclientuser().wallet);
@@ -51,13 +50,20 @@ $("#gobutton").click(function () {
     connection.invoke("SendMessage", username, message,true);
 });
 
-$("#passbutton").click(function () {
+$("#passbutton").click(pass());
+
+function pass() {
     if ($("#passbutton").hasClass("disabled")) {
         return;
     }
     var username = $("#namefield").html();
-    connection.invoke("SendMessage", username, "pass",true);
-});
+    connection.invoke("SendMessage", username, "pass", true);
+}
+
+function automaticPass() {
+    var username = $("#namefield").html();
+    connection.invoke("SendMessage", username, "pass", true);
+}
 
 function disbleUserPanel() {
 
@@ -89,6 +95,7 @@ function enableUserPanel(minval, maxval) {
     if ($("#valueinput").attr("min") == 0) {
         $("#passbutton").addClass("disabled");
     }
+    setTimeout(automaticPass, 15000);
 };
 
 function preparePanelForAdmin() {

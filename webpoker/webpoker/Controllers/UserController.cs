@@ -32,6 +32,10 @@ namespace webpoker.Controllers
             {
                 Application.Instance.AllUsers.Add(user);
             }
+            else
+            {
+                user = Application.Instance.AllUsers.First(x => x.Name == user.Name);
+            }
 
             HttpContext.Session.SetString("username", user.Name);
             user.Wallet = 100;

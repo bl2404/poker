@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Data.SqlClient;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using webpoker.Enums;
@@ -22,12 +24,13 @@ namespace webpoker.GameModels
         public int MaxBid { get; private set; } = 0;
         public int Pool { get; private set; } = 0;
 
+        public bool Finish { get; private set; } = false;
+
         private Bets _bet;
         private CardSuit _cardSuit;
 
         private int _actionmax = 0;
         private bool newBet;
-        private bool finish = false;
 
         public Card _flop1 { get; private set; }
         public Card _flop2 { get; private set; }
@@ -37,15 +40,18 @@ namespace webpoker.GameModels
 
         private int _enterFee = 1;
 
-        public Game()
+        private Table _table;
+
+        public Game(Table table)
         {
+            _table = table;
             CurrentUser = GetActiveUsers().First();
             MinBid = _enterFee;
             MaxBid = MinBid;
             _cardSuit = new CardSuit();
             _bet = Bets.Entrance;
             ResetUserActions(GetAllUsers());
-            foreach (var usr in Application.Instance.Tables[0].Users)
+            foreach (var usr in _table.Users)
                 usr.ResetUserCards();
         }
 
@@ -56,8 +62,16 @@ namespace webpoker.GameModels
                 ResetUserActions(GetActiveUsers());
             }
             newBet = false;
-            MaxBid = GetActiveUsers().Min(x => x.Wallet);
+            try
+            {
+                MaxBid = GetActiveUsers().Min(x => x.Wallet);
 
+            }
+            catch
+            {
+                Debug.WriteLine("cnt: " + GetActiveUsers());
+            }
+             
 
             CalculateGameParameters(message);
             FindNextUser();
@@ -74,19 +88,21 @@ namespace webpoker.GameModels
                 _flop3?.GetCardDescription() ?? "",
                 _turn?.GetCardDescription() ?? "",
                 _river?.GetCardDescription() ?? "",
-                finish,
-                Application.Instance.Tables[0].Admin.Name);
+                Finish,
+                GetActiveUsers().First().Name);
             return string.Format("{0}:{1}", usersInfo, gameinfo);
         }
 
         private User[] GetActiveUsers()
         {
-            return Application.Instance.Tables[0].Users.Where(x => x.Active).ToArray();
+            if (_table.Users.Where(x => x.Active).Count() == 0)
+                return new User[] { Application.Instance.AllUsers[0] };
+            return _table.Users.Where(x => x.Active).ToArray();
         }
 
         private User[] GetAllUsers()
         {
-            return Application.Instance.Tables[0].Users.ToArray();
+            return _table.Users.ToArray();
         }
 
         private void Pass()
@@ -96,7 +112,7 @@ namespace webpoker.GameModels
 
         private void GameOver()
         {
-            finish = true;
+            Finish = true;
             bool finishErlierByPass = false;
             if (_flop1 == null || _flop2 == null || _flop3 == null || _turn == null || _river == null)
             {
@@ -125,9 +141,6 @@ namespace webpoker.GameModels
                 user.Wallet += (Pool - rest) / winners.Count();
             }
             Pool = rest;
-
-            //Application.Instance.Tables[0].Game = null;
-            //MessageToSend = "";
         }
 
         private User[] FindWinners()
@@ -163,7 +176,7 @@ namespace webpoker.GameModels
             CurrentUser = GetActiveUsers().FirstOrDefault(x => x.Action == null);
             if (CurrentUser == null)
             {
-                CurrentUser = GetActiveUsers().FirstOrDefault(x => Convert.ToInt32(x.Action) < _actionmax);
+                CurrentUser = GetActiveUsers().Where(x=>int.TryParse(x.Action,out int parsedAction)).FirstOrDefault(x => Convert.ToInt32(x.Action) < _actionmax);
                 if (CurrentUser == null)
                 {
                     StartNewAuction();

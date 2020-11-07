@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using webpoker.Models;
 using webpoker.Enums;
+using webpoker.GameModels;
 
 namespace webpoker_UnitTests
 {
