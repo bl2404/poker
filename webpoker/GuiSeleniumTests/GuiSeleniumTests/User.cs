@@ -5,50 +5,59 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace GuiSeleniumTests
 {
     public class User
     {
         private string infoXPath = "/html/body/div/main/div/div[7]/div";
+        private ChromeDriver driver;
 
-        public User(string name)
+        public User(string name) 
         {
-            Name = name;
             var dir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent;
-            Driver = new ChromeDriver(dir.ToString());
-            Driver.Navigate().GoToUrl("https://localhost:44342/");
-            Driver.FindElement(By.Id("username")).SendKeys(name);
-            Driver.FindElement(By.Id("createUser")).Click();
-            Driver.FindElement(By.XPath("/html/body/div/main/table/tbody[2]/tr/td/a")).Click();
+            driver = new ChromeDriver(dir.ToString());
+
+            driver.Navigate().GoToUrl("https://localhost:44342/");
+            driver.FindElement(By.Id("username")).SendKeys(name);
+            driver.FindElement(By.Id("createUser")).Click();
             Thread.Sleep(1000);
         }
 
+        public void CreateTable(string name)
+        {
+            driver.FindElement(By.XPath("/html/body/div/main/p/a")).Click();
+            driver.FindElement(By.XPath("/html/body/div/main/div[1]/div/form/div[1]/input")).SendKeys("table1");
+            driver.FindElement(By.XPath("/html/body/div/main/div[1]/div/form/div[2]/input")).Click();
+            driver.FindElement(By.XPath("/html/body/div/main/table/tbody[2]/tr/td/a")).Click();
+        }
+
+        public void JoinTable(string name)
+        {
+            driver.FindElement(By.XPath("/html/body/div/main/table/tbody[2]/tr/td/a")).Click();
+        }
+
+
         public void ClickGoButton()
         {
-            Driver.FindElement(By.Id("gobutton")).Click();
+            driver.FindElement(By.Id("gobutton")).Click();
             Thread.Sleep(1000);
         }
 
         public void Przebij(int number)
         {
-            Driver.FindElement(By.Id("valueinput")).SendKeys(number.ToString());
+            driver.FindElement(By.Id("valueinput")).SendKeys(number.ToString());
         }
 
         public string GetInfo()
         {
-            return Driver.FindElement(By.XPath(infoXPath)).Text;
+            return driver.FindElement(By.XPath(infoXPath)).Text;
         }
 
         public void Close()
         {
-            Driver.Close();
+            driver.Close();
         }
-
-        public ChromeDriver Driver { get; private set; }
-
-        public string Name { get; private set; }
-
-
     }
 }

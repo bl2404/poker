@@ -11,14 +11,17 @@ namespace GuiSeleniumTests
     {
         static void Main(string[] args)
         {
-            BidOnLastCard();
+            SingleGameTest();
             Environment.Exit(0);
         }
 
-        private static void BidOnLastCard()
+        private static void SingleGameTest()
         {
             User abc = new User("abc");
+            abc.CreateTable("table1");
             User xyz = new User("xyz");
+            xyz.JoinTable("xyz");
+
             abc.ClickGoButton();
 
             //enter
